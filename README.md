@@ -1,0 +1,1 @@
+# Inter-College-Event-Management-Platform
