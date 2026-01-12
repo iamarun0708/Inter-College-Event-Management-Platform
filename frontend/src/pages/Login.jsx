@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-//import "../styles/auth.css";
+import "../styles/auth.css";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -42,3 +42,4 @@ export default function Login() {
     </div>
   );
 }
+
