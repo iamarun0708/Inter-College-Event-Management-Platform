@@ -14,7 +14,7 @@ export default function Register() {
         />
       </div>
 
-      
+      {/* RIGHT FORM */}
       <div className="auth-form">
         <div className="logo">EVEMAN</div>
         <div className="title">Register Now</div>
