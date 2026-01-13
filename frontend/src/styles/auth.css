@@ -115,6 +115,17 @@ input::placeholder {
   text-decoration: underline;
 }
 
+.auth-link-p {
+  color: #7c3aed;          /* 🔥 Purple */
+  cursor: pointer;         /* 🔥 Hand cursor */
+  font-weight: 500;
+  margin-top: -20px;
+}
+
+.auth-link-p:hover {
+  text-decoration: underline;
+}
+
 .auth-illustration {
   flex: 1;
   max-width: 460px;          /* 🔥 slightly smaller */
@@ -155,6 +166,7 @@ input::placeholder {
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+  margin-top: -15px;
 }
 
 .remember-me input {

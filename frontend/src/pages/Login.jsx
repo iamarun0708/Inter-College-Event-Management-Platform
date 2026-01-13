@@ -42,7 +42,7 @@ export default function Login() {
       Remember Me
     </label>
 
-    <span className="auth-link">
+    <span className="auth-link-p">
       Forgot Password?
     </span>
   </div>
