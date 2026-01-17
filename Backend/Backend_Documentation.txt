@@ -120,3 +120,24 @@ File: src/utils/token.util.js
 
 File: src/validations/auth.validation.js
 - Description: Joi schemas (signupSchema, loginSchema) for validating request body data.
+
+
+File: src/utils/sendEmail.js
+- Function: sendEmail(options)
+- Description: Sends email using Nodemailer (Gmail/Ethereal).
+
+
+5. NEW FEATURES
+---------------
+Feature: Forgot Password
+- Route: POST /api/auth/forgot-password
+- Description: Generates 6-digit OTP, saves to user model, sends email.
+
+Feature: Verify OTP
+- Route: POST /api/auth/verify-otp
+- Description: Verifies email and OTP. Returns temporary access or success message.
+
+Feature: Reset Password
+- Route: POST /api/auth/reset-password
+- Description: Resets user password after OTP verification.
+

@@ -51,3 +51,25 @@ This document provides an overview of the Frontend architecture, file structure,
 1. **API Connection**: Connect Login and Register forms to the Backend APIs (`/api/auth/login`, `/api/auth/signup`).
 2. **State**: Implement state for form inputs.
 3. **Protected Routes**: Implement logic to prevent unauthorized access to `/student` and `/admin` routes based on token/role.
+
+## 4. Updates (Forgot Password Feature)
+### Pages
+#### `ForgotPassword.jsx`
+- **Route**: `/forgot-password`
+- **Purpose**: Input email to request OTP.
+- **Integration**: Calls `/api/auth/forgot-password`.
+
+#### `VerifyOtp.jsx`
+- **Route**: `/verify-otp`
+- **Purpose**: Input received OTP.
+- **Integration**: Calls `/api/auth/verify-otp`.
+
+#### `ResetPassword.jsx`
+- **Route**: `/reset-password`
+- **Purpose**: Input new password.
+- **Integration**: Calls `/api/auth/reset-password`.
+
+### Integrated Features
+- **Authentication**: Login and Signup are now connected to Backend API.
+- **Forgot Password**: Complete flow (Email -> OTP -> Reset) is integrated.
+

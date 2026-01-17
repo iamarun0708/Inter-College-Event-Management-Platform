@@ -35,6 +35,12 @@ File: src/pages/StudentDashboard.jsx
 File: src/pages/AdminDashboard.jsx
 - Placeholder dashboard for Admin users.
 
-3. STATUS
----------
-The frontend is currently in the "UI Prototype" phase. The visual structure for Authentication is in place, but it is not yet connected to the Node.js/Express backend. Form inputs do not currently capture or submit data.
+4. UPDATES
+----------
+- Authentication: Login/Signup API integrated.
+- Forgot Password: Full flow integrated (Frontend + Backend).
+
+New Pages:
+1. ForgotPassword.jsx (/forgot-password)
+2. VerifyOtp.jsx (/verify-otp)
+3. ResetPassword.jsx (/reset-password)
