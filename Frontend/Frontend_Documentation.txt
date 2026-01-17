@@ -1,0 +1,40 @@
+CAMPUS EVENT HUB FRONTEND DOCUMENTATION
+=======================================
+
+1. OVERVIEW
+-----------
+Framework: React.js (Vite)
+Routing: react-router-dom
+Styling: CSS
+
+2. KEY COMPONENTS
+-----------------
+File: src/main.jsx
+- Entry point rendering the React App.
+
+File: src/App.jsx
+- Manages Routing:
+  - "/"       -> Login Page
+  - "/signup" -> Register Page
+  - "/student"-> Student Dashboard
+  - "/admin"  -> Admin Dashboard
+
+File: src/pages/Login.jsx
+- UI for User Login.
+- Contains inputs for Email and Password.
+- NOTE: Currently contains UI markup only; no backend integration active.
+
+File: src/pages/Register.jsx
+- UI for User Registration.
+- Contains inputs for Name, College, Email, Password, and Role selection.
+- NOTE: Currently contains UI markup only; no backend integration active.
+
+File: src/pages/StudentDashboard.jsx
+- Placeholder dashboard for Student users.
+
+File: src/pages/AdminDashboard.jsx
+- Placeholder dashboard for Admin users.
+
+3. STATUS
+---------
+The frontend is currently in the "UI Prototype" phase. The visual structure for Authentication is in place, but it is not yet connected to the Node.js/Express backend. Form inputs do not currently capture or submit data.

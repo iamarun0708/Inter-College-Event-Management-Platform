@@ -11,14 +11,16 @@ body {
 
 .auth-wrapper {
   display: flex;
-  min-height: 100vh;
   align-items: center;
-  justify-content: center;
-  padding: 40px;
+  justify-content: center;   /* centers content block */
+  gap: 200px;                 /* 🔥 reduce middle gap */
+  min-height: 100vh;
+  padding: 0 40px;           /* 🔥 reduce side space */
 }
 
 .auth-form {
-  width: 420px;
+  flex: 1;
+  max-width: 440px;          /* 🔥 slightly smaller */
 }
 
 .logo {
@@ -103,26 +105,127 @@ input::placeholder {
   margin-top: 10px;
 }
 
-.link {
-  margin-top: 16px;
-  font-size: 14px;
+.auth-link {
+  color: #7c3aed;          /* 🔥 Purple */
+  cursor: pointer;         /* 🔥 Hand cursor */
+  font-weight: 500;
 }
 
-.link span {
-  color: #7c3aed;
-  cursor: pointer;
-  font-weight: 600;
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-link-p {
+  color: #7c3aed;          /* 🔥 Purple */
+  cursor: pointer;         /* 🔥 Hand cursor */
+  font-weight: 500;
+  margin-top: -20px;
+}
+
+.auth-link-p:hover {
+  text-decoration: underline;
 }
 
 .auth-illustration {
   flex: 1;
+  max-width: 460px;          /* 🔥 slightly smaller */
   display: flex;
   justify-content: center;
 }
 
 .auth-illustration img {
-  max-width: 520px;
+  width: 100%;
+  max-width: 420px;          /* 🔥 prevents oversized image */
 }
+
+
+/* This defines the SINGLE alignment column */
+.field-group {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Input */
+.field-group input {
+  width: 100%;
+}
+
+/* Shared row under input / button */
+.password-row {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Checkbox */
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  margin-top: -15px;
+}
+
+.remember-me input {
+  margin: 0;
+}
+
+/* Links */
+.auth-link {
+  color: #6a2ff9;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+/* Button */
+.login-btn {
+  width: 100%;
+}
+
+
+
+/* Sign up text aligned to button width */
+.signup-text {
+  margin-top: 12px;
+  font-size: 14px;
+  text-align: right;      /* 🔑 aligns Sign Up to button */
+}
+
+.signup-text span {
+  color: #6a2ff9;
+  cursor: pointer;
+}
+
+.signup-text span:hover {
+  text-decoration: underline;
+}
+
+.signup-row {
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between; /* 🔥 left & right */
+  align-items: center;
+  font-size: 14px;
+}
+
+.signup-right {
+  color: #6a2ff9;
+  cursor: pointer;
+}
+
+.signup-right:hover {
+  text-decoration: underline;
+}
+
+
+
 
 @media (max-width: 600px) {
   .auth-wrapper {

@@ -1,0 +1,122 @@
+CAMPUS EVENT HUB BACKEND DOCUMENTATION
+======================================
+
+This document provides a detailed overview of the backend file structure, functions, and their outcomes.
+
+1. ENTRY POINTS & CONFIGURATION
+-------------------------------
+File: src/server.js
+- Description: The main entry point of the application.
+- Functionality: Loads environment variables, connects to database, starts server.
+- Outcome: Server listens on port 5000 (default).
+
+File: src/app.js
+- Description: Express app configuration.
+- Functionality: Sets up security (helmet), CORS, rate limiting, JSON parsing, routes, and error handling.
+- Outcome: Exports the 'app' module.
+
+File: src/config/db.js
+- Function: connectDB()
+- Description: Connects to MongoDB.
+- Outcome: Logs "MongoDB Connected" on success; exits process on failure.
+
+
+2. CONTROLLERS (BUSINESS LOGIC)
+-------------------------------
+File: src/controllers/auth.controller.js
+
+Function: registerUser(req, res)
+- Description: Handles user registration.
+- Outcome: Success(201) returns new user + token. Failure(400) if validation error or user exists.
+
+Function: loginUser(req, res)
+- Description: Authenticates a user.
+- Outcome: Success(200) returns user info + token. Failure(401) if invalid credentials.
+
+File: src/controllers/event.controller.js
+
+Function: createEvent(req, res)
+- Description: Creates a new event.
+- Access: College Admin
+- Outcome: Success(201) returns created event.
+
+Function: getEvents(req, res)
+- Description: Gets all events.
+- Access: Public
+- Outcome: Success(200) returns array of events.
+
+Function: getEventById(req, res)
+- Description: Gets single event by ID.
+- Outcome: Success(200) returns event object. Failure(404) "Event not found".
+
+Function: updateEvent(req, res)
+- Description: Updates an event.
+- Access: College Admin
+- Outcome: Success(200) returns updated event.
+
+Function: deleteEvent(req, res)
+- Description: Deletes an event.
+- Access: College Admin
+- Outcome: Success(200) returns "Event removed".
+
+File: src/controllers/registration.controller.js
+
+Function: registerForEvent(req, res)
+- Description: Registers currently logged-in student for an event.
+- Outcome: Success(201) returns registration. Failure(400) if already registered.
+
+Function: getMyRegistrations(req, res)
+- Description: Fetches registrations for the current user.
+- Outcome: Success(200) returns list of registrations.
+
+Function: getEventRegistrations(req, res)
+- Description: Fetches all students registered for a specific event.
+- Access: College Admin
+- Outcome: Success(200) returns list of registrations.
+
+Function: updateRegistrationStatus(req, res)
+- Description: Updates status (e.g., approved) of a registration.
+- Outcome: Success(200) returns updated registration.
+
+File: src/controllers/feedback.controller.js
+
+Function: addFeedback(req, res)
+- Description: Submits feedback.
+- Outcome: Success(201) returns feedback object.
+
+Function: getEventFeedback(req, res)
+- Description: Gets all feedback for an event.
+- Outcome: Success(200) returns list of feedback.
+
+
+3. MIDDLEWARES
+--------------
+File: src/middlewares/auth.middleware.js
+
+Function: protect(req, res, next)
+- Description: Verifies JWT token.
+- Outcome: success calls next(); failure returns 401 Unauthorized.
+
+File: src/middlewares/role.middleware.js
+
+Function: authorize(...roles)
+- Description: Checks if user has required role.
+- Outcome: success calls next(); failure returns 403 Forbidden.
+
+File: src/middlewares/error.middleware.js
+
+Function: notFound(req, res, next)
+- Description: Handles 404 errors for undefined routes.
+
+Function: errorHandler(err, req, res, next)
+- Description: Global error handler that returns JSON error responses.
+
+
+4. UTILITIES & VALIDATIONS
+--------------------------
+File: src/utils/token.util.js
+- Function: generateToken(id)
+- Description: Creates JWT token valid for 7 days.
+
+File: src/validations/auth.validation.js
+- Description: Joi schemas (signupSchema, loginSchema) for validating request body data.

@@ -14,7 +14,7 @@ export default function Register() {
         />
       </div>
 
-      
+      {/* RIGHT FORM */}
       <div className="auth-form">
         <div className="logo">EVEMAN</div>
         <div className="title">Register Now</div>
@@ -31,7 +31,7 @@ export default function Register() {
         <label>Password</label>
         <input type="password" placeholder="Enter your password" />
 
-        <label>Reenter Password</label>
+        <label>Re-enter Password</label>
         <input type="password" placeholder="Re-enter your password again" />
 
         <label>Role</label>
@@ -43,9 +43,9 @@ export default function Register() {
 
         <button className="login-btn">Sign Up</button>
 
-        <div className="link">
-          Already have an account?{" "}
-          <span onClick={() => navigate("/")}>Login</span>
+        <div className="password-row">
+          <span>Already have an account?</span>
+          <span className="auth-link" onClick={() => navigate("/")}>Login</span>
         </div>
       </div>
     </div>

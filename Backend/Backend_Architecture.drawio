@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-01-11T00:00:00.000Z" agent="Agent" version="21.0.0" type="device">
+  <diagram id="backend-arch" name="Backend Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Frontend/Client -->
+        <mxCell id="client" value="Client (Frontend)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Express Server Container -->
+        <mxCell id="server_container" value="Express Server (Node.js)" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="480" height="520" as="geometry" />
+        </mxCell>
+
+        <!-- App Entry -->
+        <mxCell id="app_entry" value="Server / App Entry&#xa;(server.js / app.js)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="server_container">
+          <mxGeometry x="40" y="40" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Middlewares -->
+        <mxCell id="middleware" value="Middlewares&#xa;(Auth, Role, Error)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="server_container">
+          <mxGeometry x="40" y="140" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Routes -->
+        <mxCell id="routes" value="Routes" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="server_container">
+          <mxGeometry x="220" y="40" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="route_auth" value="/api/auth" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="routes">
+          <mxGeometry x="10" y="40" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="route_event" value="/api/events" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="routes">
+          <mxGeometry x="10" y="80" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="route_reg" value="/api/registrations" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="routes">
+          <mxGeometry x="10" y="120" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="route_feedback" value="/api/feedback" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="routes">
+          <mxGeometry x="10" y="160" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Controllers -->
+        <mxCell id="controllers" value="Controllers" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="server_container">
+          <mxGeometry x="220" y="280" width="220" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_auth" value="Auth Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="controllers">
+          <mxGeometry x="10" y="40" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_event" value="Event Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="controllers">
+          <mxGeometry x="10" y="80" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_reg" value="Registration Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="controllers">
+          <mxGeometry x="10" y="120" width="200" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ctrl_feedback" value="Feedback Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="controllers">
+          <mxGeometry x="10" y="160" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Database -->
+        <mxCell id="db" value="MongoDB Database" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="800" y="260" width="120" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Models -->
+        <mxCell id="models" value="Mongoose Models" style="swimlane;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="540" y="600" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="model_user" value="User" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="models">
+          <mxGeometry x="10" y="40" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="model_event" value="Event" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="models">
+          <mxGeometry x="10" y="80" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="model_reg" value="Registration" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="models">
+          <mxGeometry x="10" y="120" width="180" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <!-- Client -> App -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="client" target="app_entry">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="160" y="270" />
+              <mxPoint x="160" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge1_lbl" value="HTTP Request" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge1">
+          <mxGeometry x="-0.2" y="0" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- App -> Middleware -->
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="server_container" source="app_entry" target="middleware">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Middleware -> Routes -->
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="server_container" source="middleware" target="routes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Routes -> Controllers -->
+        <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="server_container" source="routes" target="controllers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Controllers -> Models -->
+        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="controllers" target="models">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Models -> DB -->
+        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="models" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6_lbl" value="Read/Write" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="edge6">
+          <mxGeometry x="-0.1" y="0" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
