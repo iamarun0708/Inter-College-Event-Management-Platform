@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api"; 
-import "../styles/auth.css";
-// Ensure this path is correct for your project structure
-import loginImg from "../assets/login.svg";
+// Check your file name carefully: is it auth.css or Auth.css?
+import "../styles/auth.css"; 
+import loginImg from "../assets/login.svg"; 
 
 export default function Login() {
   const navigate = useNavigate();
   
-  // State for logic
+  // --- LOGIC SECTION ---
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,27 +16,20 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       setError("");
-      // 1. Send data to Backend
-      const { data } = await API.post("/auth/login", {
-        email,
-        password,
-      });
-
-      // 2. Save success data
+      const { data } = await API.post("/auth/login", { email, password });
       localStorage.setItem("userInfo", JSON.stringify(data));
-
-      // 3. Redirect based on Role
+      
       if (data.role === "college_admin") {
         navigate("/admin");
       } else {
         navigate("/student");
       }
-
     } catch (err) {
       setError(err.response?.data?.message || "Invalid Email or Password");
     }
   };
 
+  // --- VISUAL SECTION ---
   return (
     <div className="auth-wrapper">
       <div className="auth-form">
@@ -44,8 +37,8 @@ export default function Login() {
         <div className="title">Login now</div>
         <div className="subtitle">Hi, Welcome back 👋</div>
 
-        {/* Error Message Display */}
-        {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+        {/* Error Message */}
+        {error && <div style={{ color: "red", fontSize: "0.9rem", marginBottom: "10px" }}>{error}</div>}
 
         <button className="google-btn">Login with Google</button>
 
@@ -55,7 +48,7 @@ export default function Login() {
           <span></span>
         </div>
 
-        {/* EMAIL INPUT */}
+        {/* EMAIL */}
         <label>Email</label>
         <div className="field-group">
           <input
@@ -66,8 +59,8 @@ export default function Login() {
           />
         </div>
 
-        {/* PASSWORD INPUT */}
-        <label>Password</label>
+        {/* PASSWORD */}
+        <label>Password:-</label>
         <div className="field-group">
           <input
             type="password"
@@ -76,13 +69,14 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <div className="password-row">
-            <label className="remember-me">
-              <input type="checkbox" />
+          {/* FORCED ALIGNMENT FIX: Added style={{ display: 'flex'... }} */}
+          <div className="password-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+            <label className="remember-me" style={{ display: "flex", alignItems: "center", gap: "5px", cursor: "pointer" }}>
+              <input type="checkbox" style={{ width: "auto", margin: 0 }} />
               Remember Me
             </label>
 
-            <span className="auth-link-p">
+            <span className="auth-link-p" style={{ cursor: "pointer", color: "#666" }}>
               Forgot Password?
             </span>
           </div>
@@ -92,9 +86,11 @@ export default function Login() {
         <div className="field-group">
           <button className="login-btn" onClick={handleLogin}>Login</button>
 
-          <div className="password-row">
-            <span>Not registered yet?</span>
-            <span className="auth-link" onClick={() => navigate("/signup")}>Sign Up</span>
+          <div className="password-row" style={{ marginTop: "10px", textAlign: "center" }}>
+            <span>Not registered yet? </span>
+            <span className="auth-link" onClick={() => navigate("/signup")} style={{ cursor: "pointer", color: "#6C63FF", fontWeight: "bold" }}>
+              Sign Up
+            </span>
           </div>
         </div>
 
@@ -102,7 +98,7 @@ export default function Login() {
 
       {/* ILLUSTRATION */}
       <div className="auth-illustration">
-        <img src={loginImg} alt="Login Illustration" />
+        <img src={loginImg} alt="illustration" />
       </div>
     </div>
   );
