@@ -14,7 +14,7 @@ body {
   align-items: center;
   justify-content: center;   /* centers content block */
   gap: 200px;                 /* 🔥 reduce middle gap */
-  min-height: 100vh;
+  min-height: 110vh;
   padding: 0 40px;           /* 🔥 reduce side space */
 }
 

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
+import Logo from "../components/Logo";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ export default function Login() {
   return (
   <div className="auth-wrapper">
     <div className="auth-form">
-      <div className="logo">EVEMAN</div>
+      <Logo size="small" />
       <div className="title">Login now</div>
       <div className="subtitle">Hi, Welcome back 👋</div>
 

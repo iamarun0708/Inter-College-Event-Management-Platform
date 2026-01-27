@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import "../styles/auth.css";
+import Logo from "../components/Logo";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Register() {
 
       {/* RIGHT FORM */}
       <div className="auth-form">
-        <div className="logo">EVEMAN</div>
+        <Logo size="small"/>
         <div className="title">Register Now</div>
 
         <label>Full Name</label>
@@ -45,7 +46,7 @@ export default function Register() {
 
         <div className="password-row">
           <span>Already have an account?</span>
-          <span className="auth-link" onClick={() => navigate("/")}>Login</span>
+          <span className="auth-link" onClick={() => navigate("/login")}>Login</span>
         </div>
       </div>
     </div>
