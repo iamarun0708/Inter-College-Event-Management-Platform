@@ -1,0 +1,158 @@
+.landing {
+  font-family: Arial, sans-serif;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 60px;
+}
+
+
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-links button {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* HERO */
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 60px;
+  padding: 40px 100px 80px;
+}
+
+.hero-left h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.hero-points {
+  margin: 20px 0 30px;
+  padding-left: 18px;
+  color: #444;
+}
+
+.hero-points li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.hero-right img {
+  max-width: 100%;
+  height: auto;
+}
+.primary-btn {
+  background: #7c3aed;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 30px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.primary-btn:hover {
+  background: #5b21b6;
+}
+
+
+/* EVENTS */
+.events {
+  padding: 60px 100px;
+}
+
+.events h2 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.event-card {
+  background: #f4f4f5;
+  border-radius: 16px;
+  padding: 12px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.event-card p {
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+/* FEEDBACK */
+.feedback {
+  padding: 40px 60px;
+}
+
+.feedback-row {
+  display: flex;
+  gap: 20px;
+}
+
+.feedback-card {
+  background: #f3f4f6;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* ABOUT */
+.about {
+  display: flex;
+  justify-content: space-between;
+  padding: 40px 60px;
+}
+
+/* FOOTER */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 30px 60px;
+  background: #f9fafb;
+}
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 60px 30px;
+    text-align: center;
+  }
+
+  .hero-points {
+    text-align: left;
+  }
+
+  .event-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

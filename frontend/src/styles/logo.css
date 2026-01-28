@@ -1,0 +1,23 @@
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo-container img {
+  height: auto;
+}
+
+/* Small (Login / Register) */
+.logo-container.small img {
+  width: 140px;   /* 👈 MATCHES old text logo size */
+}
+
+/* Medium (Landing navbar) */
+.logo-container.medium img {
+  width: 180px;
+}
+
+/* Large (Hero / branding) */
+.logo-container.large img {
+  width: 240px;
+}
