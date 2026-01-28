@@ -9,29 +9,34 @@ import Certificates from "./pages/Certificates";
 import EventDetails from "./pages/EventDetails";
 import DashboardLayout from "./Layouts/dashboardLayout";
 import AdminDashboard from "./pages/AdminDashboard";
+import CreateEvent from "./pages/CreateEvent";
 import "./styles/logo.css";
-
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Register />} />
+        <Route path="/register" element={<Register />} /> {/* FIXED: Changed from /signup to /register */}
 
+        {/* Student Protected Routes (Wrapped in Layout) */}
         <Route element={<DashboardLayout />}>
-          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} /> {/* FIXED: Changed from /student */}
           <Route path="/browseEvents" element={<BrowseEvents />} />
           <Route path="/registrations" element={<MyRegistrations />} />
           <Route path="/certificates" element={<Certificates />} />
-          <Route
-            path="/events/:id"
-            element={<EventDetails />}
-          />
-
+          <Route path="/events/:id" element={<EventDetails />} />
         </Route>
+
+        {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/create-event" element={<CreateEvent />} />
+        
+        {/* COMING SOON: We will need to add Create Event routes here later */}
+        {/* <Route path="/admin/create-event" element={<CreateEvent />} /> */}
+
       </Routes>
     </BrowserRouter>
   );

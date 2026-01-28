@@ -1,53 +1,46 @@
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import API from "../services/api"; // Import the bridge
 import "../styles/dashboard.css";
-import cultureImg from "../assets/culture.jpg";
-import tech from "../assets/event1.jpg";
-import sports from "../assets/sports.jpg";
 
-const events = [
-  {
-    id: 1,
-    title: "Cultural Fest",
-    image: cultureImg,
-    date: "2 Nov 2026",
-    location: "Gallery Hall",
-    status: "Open",
-    description:
-      "Join us for an exciting cultural fest featuring dance, music, drama, and food stalls from across campus.",
-  },
-  {
-    id: 2,
-    title: "Tech Symposium 2026",
-    image: tech,
-    date: "15 Nov 2026",
-    location: "Innovation Lab",
-    status: "Open",
-    description:
-      "A 24-hour coding marathon where students collaborate to build innovative solutions.",
-  },
-  {
-    id: 3,
-    title: "Sports Meet",
-    image: sports,
-    date: "25 oct 2026",
-    location: "Main Auditorium",
-    status: "Open",
-    description:
-      "A 24-hour coding marathon where students collaborate to build innovative solutions.",
-  }
-];
+// Fallback image
+import defaultImg from "../assets/event1.jpg";
 
 export default function EventDetails() {
-  const { id } = useParams();
+  const { id } = useParams(); // This gets the long MongoDB string ID
   const navigate = useNavigate();
 
-  const event = events.find((e) => e.id === Number(id));
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!event) return <h2>Event not found</h2>;
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      try {
+        // Calls GET http://localhost:5000/api/events/:id
+        const { data } = await API.get(`/events/${id}`);
+        setEvent(data);
+      } catch (err) {
+        console.error("Error fetching event:", err);
+        setError("Event not found or server error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchEventDetails();
+    }
+  }, [id]);
+
+  // Handle Loading State
+  if (loading) return <div className="page-container"><h2>Loading event details...</h2></div>;
+  
+  // Handle Error State
+  if (error || !event) return <div className="page-container"><h2>{error || "Event not found"}</h2></div>;
 
   return (
     <div className="page-container">
-
       <button
         className="back-btn"
         onClick={() => navigate(-1)}
@@ -56,33 +49,43 @@ export default function EventDetails() {
       </button>
 
       <div className="details-card">
-
+        {/* Image with Fallback */}
         <img
-          src={event.image}
-          alt={event.title}
+          src={event.image || defaultImg}
+          alt={event.name}
           className="details-img"
+          onError={(e) => { e.target.src = defaultImg; }}
         />
 
         <div className="details-content">
-          <h1>{event.title}</h1>
+          <h1>{event.name}</h1>
 
           <div className="details-meta">
-            📅 {event.date} &nbsp; • &nbsp; 📍 {event.location}
+            {/* Format Date to look nice */}
+            📅 {new Date(event.date).toLocaleDateString()} &nbsp; • &nbsp; 
+            📍 {event.location} &nbsp; • &nbsp; 
+            👥 Capacity: {event.capacity}
           </div>
 
-          <span className="status-pill open">
-            {event.status}
+          <span className={`status-pill ${(event.status || 'open').toLowerCase()}`}>
+            {event.status || 'Open'}
           </span>
 
           <p className="details-desc">
             {event.description}
           </p>
 
-          <button className="primary-btn">
+          <div className="organizer-info">
+             <small>Organized by: {event.collegeName || "Campus Admin"}</small>
+          </div>
+
+          <button 
+            className="primary-btn"
+            onClick={() => alert("Registration feature is coming in Milestone 3!")}
+          >
             Register Now
           </button>
         </div>
-
       </div>
     </div>
   );
