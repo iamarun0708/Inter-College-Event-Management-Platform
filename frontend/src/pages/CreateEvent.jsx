@@ -1,104 +1,65 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
-import "../styles/dashboard.css"; // Reuse dashboard styles
+import "../styles/dashboard.css";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const { id } = useParams();
 
-  // Form State
-  const [eventData, setEventData] = useState({
+  const [event, setEvent] = useState({
     name: "",
+    description: "",
     date: "",
     location: "",
     category: "Tech",
-    description: "",
     capacity: "",
-    image: "" // We will paste a URL here for now
+    image: "",
   });
 
-  const handleChange = (e) => {
-    setEventData({ ...eventData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!eventData.name || !eventData.date || !eventData.location) {
-      alert("Please fill in the required fields");
-      return;
+  useEffect(() => {
+    if (id) {
+      API.get(`/events/${id}`).then(res => setEvent(res.data));
     }
+  }, [id]);
 
-    try {
-      setLoading(true);
-      // POST /api/events - Ensure your backend has this route!
-      await API.post("/events", eventData);
-      alert("Event Created Successfully!");
-      navigate("/admin"); // Go back to dashboard
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create event. Check console.");
-    } finally {
-      setLoading(false);
+  const handleChange = (e) =>
+    setEvent({ ...event, [e.target.name]: e.target.value });
+
+  const handleSubmit = async () => {
+    if (id) {
+      await API.put(`/events/${id}`, event);
+      alert("Event Updated");
+    } else {
+      await API.post("/events", event);
+      alert("Event Created");
     }
+    navigate("/admin/manage-events");
   };
 
   return (
     <div className="page-container">
-      <button className="back-btn" onClick={() => navigate("/admin")}>← Back</button>
-      
-      <div className="form-card">
-        <h1>Create New Event</h1>
-        <p>Fill in the details to publish an event.</p>
+      <h1 className="page-title">{id ? "Edit Event" : "Create Event"}</h1>
 
-        <form onSubmit={handleSubmit} className="create-event-form">
-          <div className="form-group">
-            <label>Event Name</label>
-            <input name="name" onChange={handleChange} placeholder="e.g. Tech Symposium" />
-          </div>
+      <input name="name" placeholder="Event Title" value={event.name} onChange={handleChange} />
+      <textarea name="description" placeholder="Description" value={event.description} onChange={handleChange} />
+      <input type="datetime-local" name="date" value={event.date} onChange={handleChange} />
+      <input name="location" placeholder="Location" value={event.location} onChange={handleChange} />
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Date</label>
-              <input name="date" type="date" onChange={handleChange} />
-            </div>
-            <div className="form-group">
-              <label>Location</label>
-              <input name="location" onChange={handleChange} placeholder="e.g. Auditorium" />
-            </div>
-          </div>
+      <select name="category" value={event.category} onChange={handleChange}>
+        <option>Tech</option>
+        <option>Cultural</option>
+        <option>Sports</option>
+        <option>Workshop</option>
+        <option>Seminar</option>
+      </select>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Category</label>
-              <select name="category" onChange={handleChange}>
-                <option value="Tech">Tech</option>
-                <option value="Cultural">Cultural</option>
-                <option value="Sports">Sports</option>
-                <option value="Workshop">Workshop</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Capacity</label>
-              <input name="capacity" type="number" onChange={handleChange} placeholder="e.g. 200" />
-            </div>
-          </div>
+      <input type="number" name="capacity" placeholder="Capacity" value={event.capacity} onChange={handleChange} />
+      <input name="image" placeholder="Image URL" value={event.image} onChange={handleChange} />
 
-          <div className="form-group">
-            <label>Description</label>
-            <textarea name="description" rows="4" onChange={handleChange} placeholder="Event details..."></textarea>
-          </div>
-
-          <div className="form-group">
-            <label>Image URL</label>
-            <input name="image" onChange={handleChange} placeholder="https://example.com/image.jpg" />
-          </div>
-
-          <button className="primary-btn" disabled={loading}>
-            {loading ? "Creating..." : "Publish Event"}
-          </button>
-        </form>
-      </div>
+      <button className="primary-btn" onClick={handleSubmit}>
+        {id ? "Update Event" : "Create Event"}
+      </button>
     </div>
   );
 }
