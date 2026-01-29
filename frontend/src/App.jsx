@@ -11,6 +11,7 @@ import DashboardLayout from "./Layouts/dashboardLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateEvent from "./pages/CreateEvent";
 import "./styles/logo.css";
+import ManageEvents from "./pages/ManageEvents";
 
 export default function App() {
   return (
@@ -33,7 +34,9 @@ export default function App() {
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/create-event" element={<CreateEvent />} />
-        
+        <Route path="/admin/manage-events" element={<ManageEvents />} />
+        <Route path="/admin/edit-event/:id" element={<CreateEvent />} />
+
         {/* COMING SOON: We will need to add Create Event routes here later */}
         {/* <Route path="/admin/create-event" element={<CreateEvent />} /> */}
 
