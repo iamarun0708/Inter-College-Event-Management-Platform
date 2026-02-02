@@ -1,44 +1,82 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const eventSchema = mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  collegeName: { type: String, required: true },
-  location: { type: String, required: true },
-  date: { type: Date, required: true },
-  time: { type: String, required: true },
-  
-  //
-  category: { 
-    type: String, 
-    required: true,
-    enum: ['Workshop', 'Seminar', 'Cultural', 'Sports', 'Tech', 'Other'] 
+const eventSchema = new mongoose.Schema(
+  {
+    // Core Event Details
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      required: true,
+    },
+
+    collegeName: {
+      type: String,
+      required: true,
+    },
+
+    location: {
+      type: String,
+      required: true,
+    },
+
+    date: {
+      type: Date,
+      required: true,
+    },
+
+    // Category
+    category: {
+      type: String,
+      required: true,
+      enum: ["Workshop", "Seminar", "Cultural", "Sports", "Tech", "Other"],
+    },
+
+    // Media
+    image: {
+      type: String,
+      default: "https://via.placeholder.com/150",
+    },
+
+    // Capacity & Registration
+    capacity: {
+      type: Number,
+      default: 100,
+    },
+
+    requiresApproval: {
+      type: Boolean,
+      default: false, // false = auto approve
+    },
+
+    // Visibility Control
+    visibility: {
+      type: String,
+      enum: ["Public", "College-Only"],
+      default: "Public",
+    },
+
+    //  IMPORTANT: Event Status (controls student visibility)
+    status: {
+      type: String,
+      enum: ["Open", "Closed", "Cancelled"],
+      default: "Open",
+    },
+
+    // Admin who created event
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-  image: { 
-    type: String, 
-    default: 'https://via.placeholder.com/150' // Default placeholder image
-  },
-  capacity: { 
-    type: Number, 
-    required: true, 
-    default: 100 // Default limit if not specified
-  },
-  requiresApproval: {
-    type: Boolean,
-    default: false // false = Auto-approve, true = Admin must approve
-  },
-  visibility: {
-    type: String,
-    enum: ['Public', 'College-Only'],
-    default: 'Public'
-  },
-  
-  createdBy: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
-    required: true 
+  {
+    timestamps: true,
   }
-}, { timestamps: true });
+);
 
-const Event = mongoose.model('Event', eventSchema);
-module.exports = Event;
+module.exports = mongoose.model("Event", eventSchema);
