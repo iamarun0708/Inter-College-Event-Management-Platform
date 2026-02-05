@@ -5,9 +5,11 @@ import "../styles/dashboard.css";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { id } = useParams(); // detect edit mode
 
-  //  Use `title` (matches backend Event.model.js)
+  const [loading, setLoading] = useState(false);
+
+  // Event state (matches backend Event.model.js)
   const [event, setEvent] = useState({
     title: "",
     description: "",
@@ -18,32 +20,44 @@ export default function CreateEvent() {
     image: "",
   });
 
-  //  Load event for EDIT mode
+  // 🔥 Load existing event data when editing
   useEffect(() => {
-    if (id) {
-      API.get(`/events/${id}`).then((res) => {
+    if (!id) return; // create mode
+
+    const fetchEvent = async () => {
+      try {
+        setLoading(true);
+        const res = await API.get(`/events/${id}`);
         const data = res.data;
 
         setEvent({
           title: data.title || "",
           description: data.description || "",
           date: data.date
-            ? new Date(data.date).toISOString().slice(0, 16) //  FIX for datetime-local
+            ? new Date(data.date).toISOString().slice(0, 16) // ✅ correct for datetime-local
             : "",
           location: data.location || "",
           category: data.category || "Tech",
           capacity: data.capacity || 100,
           image: data.image || "",
         });
-      });
-    }
+      } catch (err) {
+        console.error("Failed to load event", err);
+        alert("Failed to load event data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
   }, [id]);
 
-  //  Input handler
-  const handleChange = (e) =>
+  // Input handler
+  const handleChange = (e) => {
     setEvent({ ...event, [e.target.name]: e.target.value });
+  };
 
-  //  Create / Update Event
+  // Create / Update submit
   const handleSubmit = async () => {
     try {
       if (id) {
@@ -65,6 +79,8 @@ export default function CreateEvent() {
       <h1 className="page-title">
         {id ? "Edit Event" : "Create Event"}
       </h1>
+
+      {loading && <p>Loading event data...</p>}
 
       <input
         name="title"

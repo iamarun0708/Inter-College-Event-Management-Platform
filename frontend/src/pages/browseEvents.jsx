@@ -13,6 +13,9 @@ export default function BrowseEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Track image load states
+  const [loadedImages, setLoadedImages] = useState({});
+
   // Filters
   const [category, setCategory] = useState("All");
   const [status, setStatus] = useState("All");
@@ -80,12 +83,29 @@ export default function BrowseEvents() {
             <p>No events found matching your filters.</p>
           ) : (
             filteredEvents.map((event) => (
-              <div className="event-card glass" key={event._id}>
-                <img
-                  src={event.image || defaultImg}
-                  alt={event.title}
-                  onError={(e) => (e.target.src = defaultImg)}
-                />
+              <div
+                key={event._id}
+                className="event-card glass"
+                onClick={() => navigate(`/events/${event._id}`)}
+              >
+                {/* IMAGE WITH SKELETON */}
+                <div className="image-wrapper">
+                  {!loadedImages[event._id] && (
+                    <div className="image-skeleton"></div>
+                  )}
+
+                  <img
+                    src={event.image || defaultImg}
+                    alt={event.title}
+                    onLoad={() =>
+                      setLoadedImages((prev) => ({
+                        ...prev,
+                        [event._id]: true,
+                      }))
+                    }
+                    onError={(e) => (e.target.src = defaultImg)}
+                  />
+                </div>
 
                 <h3>{event.title}</h3>
 
@@ -102,9 +122,13 @@ export default function BrowseEvents() {
                   📅 {new Date(event.date).toLocaleDateString()}
                 </p>
 
+                {/* Button (no layout shift now) */}
                 <button
                   className="view-btn"
-                  onClick={() => navigate(`/events/${event._id}`)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/events/${event._id}`);
+                  }}
                 >
                   View Details
                 </button>

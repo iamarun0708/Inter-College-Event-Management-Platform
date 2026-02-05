@@ -1,45 +1,58 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+/* ===== PUBLIC PAGES ===== */
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+/* ===== STUDENT PAGES ===== */
 import StudentDashboard from "./pages/StudentDashboard";
-import BrowseEvents from "./pages/browseEvents";
-import MyRegistrations from "./pages/myregistrations";
+import BrowseEvents from "./pages/BrowseEvents";
+import MyRegistrations from "./pages/MyRegistrations";
 import Certificates from "./pages/Certificates";
 import EventDetails from "./pages/EventDetails";
-import DashboardLayout from "./Layouts/dashboardLayout";
+
+/* ===== ADMIN PAGES ===== */
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateEvent from "./pages/CreateEvent";
-import "./styles/logo.css";
 import ManageEvents from "./pages/ManageEvents";
+
+/* ===== LAYOUTS ===== */
+import StudentLayout from "./Layouts/StudentLayout";
+import AdminLayout from "./Layouts/AdminLayout";
+
+/* ===== STYLES ===== */
+import "./styles/logo.css";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes */}
+        {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> {/* FIXED: Changed from /signup to /register */}
+        <Route path="/register" element={<Register />} />
 
-        {/* Student Protected Routes (Wrapped in Layout) */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/student-dashboard" element={<StudentDashboard />} /> {/* FIXED: Changed from /student */}
+        {/* ================= STUDENT ROUTES ================= */}
+        <Route element={<StudentLayout />}>
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="/browseEvents" element={<BrowseEvents />} />
           <Route path="/registrations" element={<MyRegistrations />} />
           <Route path="/certificates" element={<Certificates />} />
+
+          {/* ✅ EVENT DETAILS (IMPORTANT) */}
           <Route path="/events/:id" element={<EventDetails />} />
         </Route>
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/create-event" element={<CreateEvent />} />
-        <Route path="/admin/manage-events" element={<ManageEvents />} />
-        <Route path="/admin/edit-event/:id" element={<CreateEvent />} />
+        {/* ================= ADMIN ROUTES ================= */}
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/create-event" element={<CreateEvent />} />
+          <Route path="/admin/manage-events" element={<ManageEvents />} />
 
-        {/* COMING SOON: We will need to add Create Event routes here later */}
-        {/* <Route path="/admin/create-event" element={<CreateEvent />} /> */}
-
+          {/* Reuse CreateEvent for edit */}
+          <Route path="/admin/edit-event/:id" element={<CreateEvent />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

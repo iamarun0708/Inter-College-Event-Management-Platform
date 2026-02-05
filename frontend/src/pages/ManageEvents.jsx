@@ -8,7 +8,7 @@ export default function ManageEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch events on load
+  // Fetch all events on load
   useEffect(() => {
     const fetchEvents = async () => {
       try {
@@ -24,7 +24,7 @@ export default function ManageEvents() {
     fetchEvents();
   }, []);
 
-  // Delete event
+  // Delete event (soft delete / cancel)
   const deleteEvent = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this event?"
@@ -55,23 +55,31 @@ export default function ManageEvents() {
       <h1 className="page-title">Manage Events</h1>
       <p className="page-subtitle">View, edit or delete events</p>
 
+      {/* Empty state */}
       {events.length === 0 ? (
         <p style={{ marginTop: "20px" }}>No events found.</p>
       ) : (
         <div className="manage-grid">
           {events.map((event) => (
             <div key={event._id} className="manage-card">
+              {/* Header */}
               <div className="manage-header">
                 <h3>{event.title}</h3>
-                <span className="category-pill">{event.category}</span>
+                <span className="category-pill">
+                  {event.category}
+                </span>
               </div>
 
+              {/* Meta Info */}
               <p className="manage-meta">
-                📅 {new Date(event.date).toLocaleString()}
+                📅 {new Date(event.date).toLocaleDateString()}
               </p>
-              <p className="manage-meta"> {event.location}</p>
-              <p className="manage-meta"> Capacity: {event.capacity}</p>
+              <p className="manage-meta">📍 {event.location}</p>
+              <p className="manage-meta">
+                👥 Capacity: {event.capacity}
+              </p>
 
+              {/* Actions */}
               <div className="manage-actions">
                 <button
                   className="edit-btn"

@@ -56,7 +56,7 @@ const getEvents = async (req, res) => {
 
     const filter = {
       ...keyword,
-      status: { $ne: "Cancelled" }, // 👈 students won't see deleted events
+      status: { $ne: "Cancelled" },
     };
 
     if (req.query.category) {
@@ -73,6 +73,28 @@ const getEvents = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch events",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get single event by ID (FOR EDIT FORM)
+ * @route   GET /api/events/:id
+ * @access  Public (or Admin)
+ */
+const getEventById = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch event",
       error: error.message,
     });
   }
@@ -125,7 +147,6 @@ const deleteEvent = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    //  Soft delete (BEST PRACTICE)
     event.status = "Cancelled";
     await event.save();
 
@@ -141,6 +162,7 @@ const deleteEvent = async (req, res) => {
 module.exports = {
   createEvent,
   getEvents,
+  getEventById,   // ✅ IMPORTANT
   updateEvent,
   deleteEvent,
 };
