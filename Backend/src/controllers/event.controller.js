@@ -159,10 +159,43 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+// @desc    Get event capacity and registration stats (Milestone 3)
+// @route   GET /api/events/stats/:eventId
+// @access  Private (Admin only)
+const getEventStats = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // This counts how many students are 'approved' to see filled slots
+    const Registration = require("../models/Registration.model"); 
+    const filledSlots = await Registration.countDocuments({ 
+      event: req.params.eventId, 
+      status: "approved" 
+    });
+
+    res.json({
+      eventName: event.title,
+      totalSlots: event.capacity,
+      filledSlots: filledSlots,
+      remainingSlots: event.capacity - filledSlots,
+      status: event.status
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: "Failed to fetch event stats", 
+      error: error.message 
+    });
+  }
+};
+
 module.exports = {
   createEvent,
   getEvents,
-  getEventById,   // ✅ IMPORTANT
+  getEventById,   
   updateEvent,
   deleteEvent,
+  getEventStats,
 };
