@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express');
 const router = express.Router();
 const {
@@ -15,3 +16,8 @@ router.get('/event/:eventId', protect, authorize('college_admin', 'super_admin')
 router.put('/:id', protect, authorize('college_admin', 'super_admin'), updateRegistrationStatus);
 
 module.exports = router;
+=======
+//dummy files just to prevent server crashing
+const router = require('express').Router();
+module.exports = router;
+>>>>>>> origin/dev-varshini
