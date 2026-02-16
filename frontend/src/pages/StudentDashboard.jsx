@@ -8,6 +8,8 @@ export default function StudentDashboard() {
 
   const [user, setUser] = useState({ name: "Student" });
   const [events, setEvents] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,19 +17,25 @@ export default function StudentDashboard() {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) setUser(storedUser);
 
-    // Load ALL events
-    const fetchEvents = async () => {
+    const loadData = async () => {
       try {
-        const res = await API.get("/events");
-        setEvents(res.data); //  store ALL events
+        const [eventsRes, regRes, notifRes] = await Promise.all([
+          API.get("/events"),
+          API.get("/registrations/my").catch(() => ({ data: [] })),
+          API.get("/notifications").catch(() => ({ data: [] })),
+        ]);
+
+        setEvents(eventsRes.data || []);
+        setRegistrations(regRes.data || []);
+        setNotifications(notifRes.data || []);
       } catch (err) {
-        console.error("Failed to load events", err);
+        console.error("Failed to load dashboard data", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEvents();
+    loadData();
   }, []);
 
   return (
@@ -42,17 +50,17 @@ export default function StudentDashboard() {
         {/* STATS */}
         <div className="stats-grid">
           <div className="stat-card">
-            <h3>{events.length}</h3> {/*  CORRECT COUNT */}
+            <h3>{events.length}</h3>
             <p>Events Available</p>
           </div>
 
           <div className="stat-card">
-            <h3>0</h3>
+            <h3>{registrations.length}</h3>
             <p>My Registrations</p>
           </div>
 
           <div className="stat-card">
-            <h3>5</h3>
+            <h3>{notifications.length}</h3>
             <p>Notifications</p>
           </div>
         </div>
@@ -76,37 +84,42 @@ export default function StudentDashboard() {
               <p>No upcoming events found.</p>
             )}
 
-            {/*  SHOW ONLY 3 IN UI, NOT IN STATE */}
             {!loading &&
-              events.slice(0, 3).map((event) => (
-                <div
-                  key={event._id}
-                  className="event-row"
-                  onClick={() => navigate(`/events/${event._id}`)}
-                >
-                  <div className="date-box purple">
-                    <span>
-                      {new Date(event.date)
-                        .toLocaleString("default", { month: "short" })
-                        .toUpperCase()}
-                    </span>
-                    <strong>{new Date(event.date).getDate()}</strong>
-                  </div>
+              events.slice(0, 3).map((event) => {
+                const eventDate = event.startDate || event.date;
 
-                  <div className="event-info">
-                    <h4>{event.title}</h4>
-                    <p>📍 {event.location}</p>
-                  </div>
-
-                  <span
-                    className={`status ${
-                      (event.status || "Open").toLowerCase()
-                    }`}
+                return (
+                  <div
+                    key={event._id}
+                    className="event-row"
+                    onClick={() => navigate(`/events/${event._id}`)}
                   >
-                    {event.status || "Open"}
-                  </span>
-                </div>
-              ))}
+                    <div className="date-box purple">
+                      <span>
+                        {new Date(eventDate)
+                          .toLocaleString("default", { month: "short" })
+                          .toUpperCase()}
+                      </span>
+                      <strong>
+                        {new Date(eventDate).getDate()}
+                      </strong>
+                    </div>
+
+                    <div className="event-info">
+                      <h4>{event.title}</h4>
+                      <p>📍 {event.location}</p>
+                    </div>
+
+                    <span
+                      className={`status ${
+                        (event.status || "Open").toLowerCase()
+                      }`}
+                    >
+                      {event.status || "Open"}
+                    </span>
+                  </div>
+                );
+              })}
           </section>
 
           {/* NOTIFICATIONS */}
@@ -115,17 +128,23 @@ export default function StudentDashboard() {
               <h3>🔔 Notifications</h3>
             </div>
 
-            <div className="notification-item">
-              <strong>Welcome to EveMan!</strong>
-              <p>Explore events and start registering today.</p>
-              <span>Just now</span>
-            </div>
+            {notifications.length === 0 && (
+              <div className="notification-item">
+                <strong>Welcome to EveMan!</strong>
+                <p>Explore events and start registering today.</p>
+                <span>Just now</span>
+              </div>
+            )}
 
-            <div className="notification-item">
-              <strong>System Update</strong>
-              <p>Milestone 2 features are now live.</p>
-              <span>1 day ago</span>
-            </div>
+            {notifications.map((n) => (
+              <div key={n._id} className="notification-item">
+                <strong>{n.title || "Update"}</strong>
+                <p>{n.message}</p>
+                <span>
+                  {new Date(n.createdAt).toLocaleString()}
+                </span>
+              </div>
+            ))}
           </section>
         </div>
       </main>

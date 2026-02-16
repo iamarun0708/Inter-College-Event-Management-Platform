@@ -2,81 +2,54 @@ const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema(
   {
-    // Core Event Details
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
+    title: { type: String, required: true },
+    description: String,
 
-    description: {
-      type: String,
-      required: true,
-    },
+    // Department conducting event
+    department: String,
 
-    collegeName: {
-      type: String,
-      required: true,
-    },
+    // Short summary / eligibility
+    summary: String,
 
-    location: {
-      type: String,
-      required: true,
-    },
+    category: String,
+    location: String,
 
-    date: {
-      type: Date,
-      required: true,
-    },
+    // Event timing
+    startDate: { type: Date, required: true },
+    endDate: Date,
 
-    // Category
-    category: {
-      type: String,
-      required: true,
-      enum: ["Workshop", "Seminar", "Cultural", "Sports", "Tech", "Other"],
-    },
+    // Registration deadline
+    registrationDeadline: Date,
 
-    // Media
-    image: {
-      type: String,
-      default: "https://via.placeholder.com/150",
-    },
-
-    // Capacity & Registration
+    // Slot capacity
     capacity: {
       type: Number,
       default: 100,
     },
 
-    requiresApproval: {
-      type: Boolean,
-      default: false, // false = auto approve
+    // Track filled slots (important for milestone 3)
+    registeredCount: {
+      type: Number,
+      default: 0,
     },
 
-    // Visibility Control
-    visibility: {
-      type: String,
-      enum: ["Public", "College-Only"],
-      default: "Public",
-    },
+    image: String,
 
-    //  IMPORTANT: Event Status (controls student visibility)
     status: {
       type: String,
-      enum: ["Open", "Closed", "Cancelled"],
+      enum: ["Open", "Closed", "Draft"],
       default: "Open",
     },
 
-    // Admin who created event
-    createdBy: {
+    organizer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
+
+    // Contact email of admin (for student view)
+    contactEmail: String,
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Event", eventSchema);

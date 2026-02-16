@@ -5,15 +5,21 @@ import "../styles/manageEvents.css";
 
 export default function ManageEvents() {
   const navigate = useNavigate();
+
   const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all events on load
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+
+  // Fetch events
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const res = await API.get("/events");
         setEvents(res.data);
+        setFilteredEvents(res.data);
       } catch (err) {
         console.error("Failed to fetch events", err);
       } finally {
@@ -24,17 +30,37 @@ export default function ManageEvents() {
     fetchEvents();
   }, []);
 
-  // Delete event (soft delete / cancel)
+  // Apply search + filter
+  useEffect(() => {
+    let temp = [...events];
+
+    if (search) {
+      temp = temp.filter((e) =>
+        e.title.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    if (category !== "All") {
+      temp = temp.filter((e) => e.category === category);
+    }
+
+    setFilteredEvents(temp);
+  }, [search, category, events]);
+
+  // Delete event
   const deleteEvent = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this event?"
+      "Are you sure you want to cancel this event?"
     );
     if (!confirmDelete) return;
 
     try {
       await API.delete(`/events/${id}`);
+
+      // Remove from UI
       setEvents((prev) => prev.filter((e) => e._id !== id));
-      alert("Event deleted successfully");
+
+      alert("Event cancelled successfully");
     } catch (err) {
       console.error("Delete failed", err);
       alert("Failed to delete event");
@@ -55,12 +81,34 @@ export default function ManageEvents() {
       <h1 className="page-title">Manage Events</h1>
       <p className="page-subtitle">View, edit or delete events</p>
 
-      {/* Empty state */}
-      {events.length === 0 ? (
+      {/* SEARCH + FILTER */}
+      <div className="manage-controls">
+        <input
+          type="text"
+          placeholder="Search events..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="All">All Categories</option>
+          <option value="Tech">Tech</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Sports">Sports</option>
+          <option value="Workshop">Workshop</option>
+          <option value="Seminar">Seminar</option>
+        </select>
+      </div>
+
+      {/* EMPTY STATE */}
+      {filteredEvents.length === 0 ? (
         <p style={{ marginTop: "20px" }}>No events found.</p>
       ) : (
         <div className="manage-grid">
-          {events.map((event) => (
+          {filteredEvents.map((event) => (
             <div key={event._id} className="manage-card">
               {/* Header */}
               <div className="manage-header">
@@ -78,6 +126,19 @@ export default function ManageEvents() {
               <p className="manage-meta">
                 👥 Capacity: {event.capacity}
               </p>
+
+              {event.department && (
+                <p className="manage-meta">
+                  🏫 Dept: {event.department}
+                </p>
+              )}
+
+              {/* Description preview */}
+              {event.summary && (
+                <div className="description-box">
+                  {event.summary}
+                </div>
+              )}
 
               {/* Actions */}
               <div className="manage-actions">

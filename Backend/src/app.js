@@ -1,44 +1,81 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const { notFound, errorHandler } = require('./middlewares/error.middleware');
-const authRoutes = require('./routes/auth.routes');
-const eventRoutes = require('./routes/event.routes');
-const registrationRoutes = require('./routes/registration.routes');
-const feedbackRoutes = require('./routes/feedback.routes');
-const notificationRoutes = require('./routes/notification.routes');
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
+const { notFound, errorHandler } = require("./middlewares/error.middleware");
 
 const app = express();
 
-// Security Middleware
+/* =========================================================
+   SECURITY MIDDLEWARE
+========================================================= */
 app.use(helmet());
 app.use(cors());
 
-// Rate Limiting
+/* =========================================================
+   RATE LIMITER
+========================================================= */
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max requests per IP
 });
 app.use(limiter);
 
-// Data Parsing Middleware
+/* =========================================================
+   BODY PARSER
+========================================================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/registrations', registrationRoutes);
-app.use('/api/feedback', feedbackRoutes);
-app.use('/api/notifications', notificationRoutes);
+/* =========================================================
+   ROUTES (SAFE LOADING)
+========================================================= */
+try {
+  const authRoutes = require("./routes/auth.routes");
+  app.use("/api/auth", authRoutes);
+} catch (e) {
+  console.log("Auth routes not loaded:", e.message);
+}
 
-// Root Route
-app.get('/', (req, res) => {
-    res.send('CampusEventHub API is running...');
+try {
+  const eventRoutes = require("./routes/event.routes");
+  app.use("/api/events", eventRoutes);
+} catch (e) {
+  console.log("Event routes not loaded:", e.message);
+}
+
+try {
+  const registrationRoutes = require("./routes/registration.routes");
+  app.use("/api/registrations", registrationRoutes);
+} catch (e) {
+  console.log("Registration routes not loaded:", e.message);
+}
+
+try {
+  const feedbackRoutes = require("./routes/feedback.routes");
+  app.use("/api/feedback", feedbackRoutes);
+} catch (e) {
+  console.log("Feedback routes not loaded:", e.message);
+}
+
+try {
+  const notificationRoutes = require("./routes/notification.routes");
+  app.use("/api/notifications", notificationRoutes);
+} catch (e) {
+  console.log("Notification routes not loaded:", e.message);
+}
+
+/* =========================================================
+   ROOT ROUTE
+========================================================= */
+app.get("/", (req, res) => {
+  res.send("CampusEventHub API is running...");
 });
 
-// Error Handling Middleware
+/* =========================================================
+   ERROR HANDLING
+========================================================= */
 app.use(notFound);
 app.use(errorHandler);
 

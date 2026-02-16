@@ -1,13 +1,224 @@
 const Registration = require("../models/Registration.model");
 const Event = require("../models/Event.model");
+const Notification = require("../models/Notification.model");
 
-// GET Participants for a specific Event (Participant List)
-// Includes: Student name, Student ID, Department, Registration status
-const getEventParticipants = async (req, res) => {
+/* =========================================================
+   AUTO REGISTRATION
+========================================================= */
+exports.autoRegister = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event)
+      return res.status(404).json({ message: "Event not found" });
+
+    const now = new Date();
+
+    // Deadline check
+    if (now < event.registrationStart || now > event.registrationEnd) {
+      return res.status(400).json({
+        message: "Registration deadline passed or not started",
+      });
+    }
+
+    // Already registered
+    const existing = await Registration.findOne({
+      event: event._id,
+      student: req.user._id,
+    });
+    if (existing) {
+      return res.status(400).json({ message: "Already registered" });
+    }
+
+    // Capacity check
+    const approvedCount = await Registration.countDocuments({
+      event: event._id,
+      status: "approved",
+    });
+
+    if (approvedCount >= event.capacity) {
+      return res.status(400).json({ message: "Event is full" });
+    }
+
+    const status = event.requiresApproval ? "pending" : "approved";
+
+    const registration = await Registration.create({
+      event: event._id,
+      student: req.user._id,
+      department: "N/A",
+      university: event.collegeName,
+      status,
+    });
+
+    await Notification.create({
+      recipient: req.user._id,
+      message: `You have registered for ${event.title}. Status: ${status}`,
+      type: "info",
+    });
+
+    res.json({
+      message: "Registration successful",
+      registration,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================================================
+   MANUAL REGISTRATION
+========================================================= */
+exports.manualRegister = async (req, res) => {
+  try {
+    const { department, university, reason } = req.body;
+
+    const event = await Event.findById(req.params.eventId);
+    if (!event)
+      return res.status(404).json({ message: "Event not found" });
+
+    const now = new Date();
+
+    if (now < event.registrationStart || now > event.registrationEnd) {
+      return res.status(400).json({
+        message: "Registration deadline passed or not started",
+      });
+    }
+
+    const existing = await Registration.findOne({
+      event: event._id,
+      student: req.user._id,
+    });
+
+    if (existing) {
+      return res.status(400).json({ message: "Already registered" });
+    }
+
+    const registration = await Registration.create({
+      event: event._id,
+      student: req.user._id,
+      department,
+      university,
+      reason,
+      status: "pending",
+    });
+
+    await Notification.create({
+      recipient: req.user._id,
+      message: `Manual registration submitted for ${event.title}. Awaiting approval.`,
+      type: "info",
+    });
+
+    res.json({ message: "Manual registration submitted", registration });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================================================
+   GET MY REGISTRATIONS
+========================================================= */
+exports.getMyRegistrations = async (req, res) => {
+  try {
+    const regs = await Registration.find({ student: req.user._id })
+      .populate("event", "title date location status registrationEnd");
+
+    res.json(regs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================================================
+   CANCEL REGISTRATION
+========================================================= */
+exports.cancelRegistration = async (req, res) => {
+  try {
+    const reg = await Registration.findById(req.params.id).populate("event");
+
+    if (!reg) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
+
+    // Ensure student owns this registration
+    if (reg.student.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "Not authorized to cancel this registration",
+      });
+    }
+
+    const now = new Date();
+
+    // Deadline check
+    if (reg.event.registrationEnd) {
+      const deadline = new Date(reg.event.registrationEnd);
+      if (now > deadline) {
+        return res.status(400).json({
+          message: "Cancellation deadline has passed",
+        });
+      }
+    }
+
+    await Registration.findByIdAndDelete(req.params.id);
+
+    await Notification.create({
+      recipient: reg.student,
+      message: `Your registration for ${reg.event.title} has been cancelled.`,
+      type: "alert",
+    });
+
+    res.json({ message: "Registration cancelled successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================================================
+   ADMIN: APPROVE / REJECT / WAITLIST
+========================================================= */
+exports.updateRegistrationStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!["approved", "rejected", "waitlist"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const reg = await Registration.findById(req.params.id)
+      .populate("student")
+      .populate("event");
+
+    if (!reg) return res.status(404).json({ message: "Not found" });
+
+    reg.status = status;
+    await reg.save();
+
+    await Notification.create({
+      recipient: reg.student._id,
+      message: `Your registration for ${reg.event.title} is ${status}`,
+      type:
+        status === "approved"
+          ? "success"
+          : status === "rejected"
+          ? "error"
+          : "info",
+    });
+
+    res.json({ message: `Registration ${status}` });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* =========================================================
+   ADMIN: GET PARTICIPANTS FOR EVENT
+========================================================= */
+exports.getEventParticipants = async (req, res) => {
   try {
     const { eventId } = req.params;
+
     const participants = await Registration.find({ event: eventId })
-      .populate("student", "fullName email"); 
+      .populate("student", "fullName email _id")
+      .populate("event", "title")
+      .select("student department university status createdAt");
 
     res.json(participants);
   } catch (error) {
@@ -15,76 +226,44 @@ const getEventParticipants = async (req, res) => {
   }
 };
 
-// Admin Actions: Approve / reject registration
-const updateRegistrationStatus = async (req, res) => {
+/* =========================================================
+   ADMIN: EVENT STATS
+========================================================= */
+exports.getEventStats = async (req, res) => {
   try {
-    const { id } = req.params; 
-    const { status } = req.body; 
+    const { eventId } = req.params;
 
-    const registration = await Registration.findByIdAndUpdate(
-      id, 
-      { status }, 
-      { new: true }
-    );
-
-    if (!registration) return res.status(404).json({ message: "Registration not found" });
-
-    res.json({ message: `Registration ${status}`, registration });
-  } catch (error) {
-    res.status(500).json({ message: "Update failed" });
-  }
-};
-
-// Slot Control: Remove participants if required
-const removeParticipant = async (req, res) => {
-  try {
-    await Registration.findByIdAndDelete(req.params.id);
-    res.json({ message: "Participant removed successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Delete failed" });
-  }
-};
-
-// Bulk update registration status
-exports.bulkUpdateStatus = async (req, res) => {
-  try {
-    const { registrationIds, status } = req.body; // registrationIds: ["id1", "id2"]
-
-    if (!["approved", "rejected"].includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
-
-    const updated = await Registration.updateMany(
-      { _id: { $in: registrationIds } },
-      { $set: { status: status } }
-    );
-
-    res.json({ 
-      message: `Successfully updated ${updated.modifiedCount} registrations to ${status}` 
+    const total = await Registration.countDocuments({ event: eventId });
+    const approved = await Registration.countDocuments({
+      event: eventId,
+      status: "approved",
     });
+    const rejected = await Registration.countDocuments({
+      event: eventId,
+      status: "rejected",
+    });
+    const waitlist = await Registration.countDocuments({
+      event: eventId,
+      status: "waitlist",
+    });
+
+    res.json({ total, approved, rejected, waitlist });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-exports.exportParticipants = async (req, res) => {
+/* =========================================================
+   ADMIN: GET ALL REGISTRATIONS (DASHBOARD)
+========================================================= */
+exports.getAllRegistrationsAdmin = async (req, res) => {
   try {
-    const participants = await Registration.find({ event: req.params.eventId })
+    const regs = await Registration.find()
       .populate("student", "fullName email")
-      .select("student department status registrationDate");
+      .populate("event", "title");
 
-    // This data structure supports the "Participant List" requirements:
-    // Student Name, Student ID (from student._id), Department, Status
-    res.json(participants);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(regs);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-};
-
-module.exports = { 
-  getEventParticipants, 
-  updateRegistrationStatus, 
-  removeParticipant, 
-  bulkUpdateStatus: exports.bulkUpdateStatus, 
-  exportParticipants: exports.exportParticipants
 };

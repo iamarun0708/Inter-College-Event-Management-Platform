@@ -9,20 +9,25 @@ export default function CreateEvent() {
 
   const [loading, setLoading] = useState(false);
 
-  // Event state (matches backend Event.model.js)
+  // Event state (Milestone 3 structure)
   const [event, setEvent] = useState({
     title: "",
     description: "",
-    date: "",
+    department: "",
+    summary: "",
+    startDate: "",
+    endDate: "",
+    registrationDeadline: "",
     location: "",
     category: "Tech",
     capacity: 100,
     image: "",
+    status: "Open",
   });
 
-  // 🔥 Load existing event data when editing
+  // Load event in edit mode
   useEffect(() => {
-    if (!id) return; // create mode
+    if (!id) return;
 
     const fetchEvent = async () => {
       try {
@@ -33,13 +38,28 @@ export default function CreateEvent() {
         setEvent({
           title: data.title || "",
           description: data.description || "",
-          date: data.date
-            ? new Date(data.date).toISOString().slice(0, 16) // ✅ correct for datetime-local
+          department: data.department || "",
+          summary: data.summary || "",
+          startDate: data.startDate
+            ? new Date(data.startDate)
+                .toISOString()
+                .slice(0, 16)
+            : "",
+          endDate: data.endDate
+            ? new Date(data.endDate)
+                .toISOString()
+                .slice(0, 16)
+            : "",
+          registrationDeadline: data.registrationDeadline
+            ? new Date(data.registrationDeadline)
+                .toISOString()
+                .slice(0, 10)
             : "",
           location: data.location || "",
           category: data.category || "Tech",
           capacity: data.capacity || 100,
           image: data.image || "",
+          status: data.status || "Open",
         });
       } catch (err) {
         console.error("Failed to load event", err);
@@ -57,7 +77,7 @@ export default function CreateEvent() {
     setEvent({ ...event, [e.target.name]: e.target.value });
   };
 
-  // Create / Update submit
+  // Submit handler
   const handleSubmit = async () => {
     try {
       if (id) {
@@ -82,6 +102,7 @@ export default function CreateEvent() {
 
       {loading && <p>Loading event data...</p>}
 
+      {/* Title */}
       <input
         name="title"
         placeholder="Event Title"
@@ -89,20 +110,60 @@ export default function CreateEvent() {
         onChange={handleChange}
       />
 
+      {/* Description */}
       <textarea
         name="description"
         placeholder="Description"
         value={event.description}
         onChange={handleChange}
+        className="description-field"
       />
 
+      {/* Department */}
       <input
-        type="datetime-local"
-        name="date"
-        value={event.date}
+        name="department"
+        placeholder="Department"
+        value={event.department}
         onChange={handleChange}
       />
 
+      {/* Summary */}
+      <textarea
+        name="summary"
+        placeholder="Event Summary"
+        value={event.summary}
+        onChange={handleChange}
+        className="description-field"
+      />
+
+      {/* Start date */}
+      <label>Start Date & Time</label>
+      <input
+        type="datetime-local"
+        name="startDate"
+        value={event.startDate}
+        onChange={handleChange}
+      />
+
+      {/* End date */}
+      <label>End Date & Time</label>
+      <input
+        type="datetime-local"
+        name="endDate"
+        value={event.endDate}
+        onChange={handleChange}
+      />
+
+      {/* Registration deadline */}
+      <label>Registration Deadline</label>
+      <input
+        type="date"
+        name="registrationDeadline"
+        value={event.registrationDeadline}
+        onChange={handleChange}
+      />
+
+      {/* Location */}
       <input
         name="location"
         placeholder="Location"
@@ -110,6 +171,7 @@ export default function CreateEvent() {
         onChange={handleChange}
       />
 
+      {/* Category */}
       <select
         name="category"
         value={event.category}
@@ -122,6 +184,7 @@ export default function CreateEvent() {
         <option value="Seminar">Seminar</option>
       </select>
 
+      {/* Capacity */}
       <input
         type="number"
         name="capacity"
@@ -130,6 +193,7 @@ export default function CreateEvent() {
         onChange={handleChange}
       />
 
+      {/* Image */}
       <input
         name="image"
         placeholder="Image URL"
@@ -137,6 +201,17 @@ export default function CreateEvent() {
         onChange={handleChange}
       />
 
+      {/* Draft option */}
+      <select
+        name="status"
+        value={event.status}
+        onChange={handleChange}
+      >
+        <option value="Open">Open</option>
+        <option value="Draft">Draft</option>
+      </select>
+
+      {/* Submit */}
       <button className="primary-btn" onClick={handleSubmit}>
         {id ? "Update Event" : "Create Event"}
       </button>

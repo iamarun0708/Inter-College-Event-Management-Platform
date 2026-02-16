@@ -9,33 +9,31 @@ const {
   deleteEvent,
 } = require("../controllers/event.controller");
 
-const { protect } = require("../middlewares/auth.middleware");
+const { protect, isAdmin } = require("../middlewares/auth.middleware");
 
-/*
-|--------------------------------------------------------------------------
-| Event Routes
-|--------------------------------------------------------------------------
-| GET    /api/events         → Public (Students & Admin)
-| GET    /api/events/:id     → Public (View / Edit Prefill)
-| POST   /api/events         → Private (Admin only)
-| PUT    /api/events/:id     → Private (Admin only)
-| DELETE /api/events/:id     → Private (Admin only – Soft delete)
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   PUBLIC ROUTES
+========================================================= */
 
-// 🔹 Get all events (Student + Admin)
+// Get all events
 router.get("/", getEvents);
 
-// 🔹 Get single event by ID (For Edit Prefill & Event Details)
+// Get single event by ID
 router.get("/:id", getEventById);
 
-// 🔹 Create new event (Admin only)
-router.post("/", protect, createEvent);
 
-// 🔹 Update event (Admin only)
-router.put("/:id", protect, updateEvent);
+/* =========================================================
+   ADMIN ROUTES
+========================================================= */
 
-// 🔹 Delete / Cancel event (Admin only)
-router.delete("/:id", protect, deleteEvent);
+// Create event
+router.post("/", protect, isAdmin, createEvent);
+
+// Update event
+router.put("/:id", protect, isAdmin, updateEvent);
+
+// Delete event
+router.delete("/:id", protect, isAdmin, deleteEvent);
+
 
 module.exports = router;

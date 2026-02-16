@@ -16,6 +16,7 @@ import EventDetails from "./pages/EventDetails";
 import AdminDashboard from "./pages/AdminDashboard";
 import CreateEvent from "./pages/CreateEvent";
 import ManageEvents from "./pages/ManageEvents";
+import Participants from "./pages/Participants";
 
 /* ===== LAYOUTS ===== */
 import StudentLayout from "./Layouts/StudentLayout";
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/create-event" element={<CreateEvent />} />
           <Route path="/admin/manage-events" element={<ManageEvents />} />
+          <Route path="/admin/participants/:id" element={<Participants />} />
 
           {/* Reuse CreateEvent for edit */}
           <Route path="/admin/edit-event/:id" element={<CreateEvent />} />

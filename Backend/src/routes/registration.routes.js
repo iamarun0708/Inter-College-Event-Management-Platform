@@ -1,25 +1,57 @@
 const express = require("express");
 const router = express.Router();
-const { 
-  getEventParticipants, 
-  updateRegistrationStatus, 
-  removeParticipant,
-  bulkUpdateStatus,
-  exportParticipants
-} = require("../controllers/registration.controller");
-const { getEventStats } = require("../controllers/event.controller");
+
+const registrationController = require("../controllers/registration.controller");
 const { protect } = require("../middlewares/auth.middleware");
 
-// 1. Participant List & Data Export (Milestone 3)
-router.get("/event/:eventId", protect, getEventParticipants);
-router.get("/export/:eventId", protect, exportParticipants);
+/* =========================================================
+   STUDENT ROUTES
+========================================================= */
 
-// 2. Admin Actions (Individual & Bulk)
-router.put("/status/:id", protect, updateRegistrationStatus);
-router.put("/bulk-status", protect, bulkUpdateStatus);
+// Auto register
+router.post("/auto/:eventId", protect, registrationController.autoRegister);
 
-// 3. Slot Control & Overview
-router.delete("/:id", protect, removeParticipant);
-router.get("/stats/:eventId", protect, getEventStats);
+// Manual register
+router.post("/manual/:eventId", protect, registrationController.manualRegister);
+
+// Get my registrations
+router.get("/my", protect, registrationController.getMyRegistrations);
+
+// Cancel registration
+router.delete("/:id", protect, registrationController.cancelRegistration);
+
+
+/* =========================================================
+   ADMIN ROUTES
+   (Temporarily without isAdmin to prevent crash)
+========================================================= */
+
+// Approve / reject / waitlist
+router.put(
+  "/status/:id",
+  protect,
+  registrationController.updateRegistrationStatus
+);
+
+// Get participants for an event
+router.get(
+  "/event/:eventId",
+  protect,
+  registrationController.getEventParticipants
+);
+
+// Get event stats
+router.get(
+  "/stats/:eventId",
+  protect,
+  registrationController.getEventStats
+);
+
+// Get all registrations (dashboard participants)
+router.get(
+  "/admin/all",
+  protect,
+  registrationController.getAllRegistrationsAdmin
+);
 
 module.exports = router;

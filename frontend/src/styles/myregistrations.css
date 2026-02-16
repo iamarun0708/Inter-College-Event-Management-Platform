@@ -80,3 +80,26 @@
 .primary-btn:hover {
   opacity: 0.9;
 }
+
+.filters {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.filters input,
+.filters select {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #7c3aed, #9f7aea);
+  color: white;
+  font-weight: 500;
+}
+
+.status-message {
+  font-size: 13px;
+  margin-top: 6px;
+  color: #6b7280;
+}
+
