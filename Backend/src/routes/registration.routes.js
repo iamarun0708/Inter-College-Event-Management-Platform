@@ -4,10 +4,6 @@ const router = express.Router();
 const registrationController = require("../controllers/registration.controller");
 const { protect } = require("../middlewares/auth.middleware");
 
-/* =========================================================
-   STUDENT ROUTES
-========================================================= */
-
 // Auto register
 router.post("/auto/:eventId", protect, registrationController.autoRegister);
 
@@ -19,12 +15,6 @@ router.get("/my", protect, registrationController.getMyRegistrations);
 
 // Cancel registration
 router.delete("/:id", protect, registrationController.cancelRegistration);
-
-
-/* =========================================================
-   ADMIN ROUTES
-   (Temporarily without isAdmin to prevent crash)
-========================================================= */
 
 // Approve / reject / waitlist
 router.put(
@@ -55,3 +45,24 @@ router.get(
 );
 
 module.exports = router;
+const express = require('express');
+const router = express.Router();
+const {
+    registerForEvent,
+    getMyRegistrations,
+    getEventRegistrations,
+    updateRegistrationStatus
+} = require('../controllers/registration.controller');
+const { protect } = require('../middlewares/auth.middleware');
+const { authorize } = require('../middlewares/role.middleware');
+
+router.post('/', protect, authorize('student'), registerForEvent);
+router.get('/my', protect, authorize('student'), getMyRegistrations);
+router.get('/event/:eventId', protect, authorize('college_admin', 'super_admin'), getEventRegistrations);
+router.put('/:id', protect, authorize('college_admin', 'super_admin'), updateRegistrationStatus);
+
+module.exports = router;
+//dummy files just to prevent server crashing
+const router = require('express').Router();
+module.exports = router;
+
