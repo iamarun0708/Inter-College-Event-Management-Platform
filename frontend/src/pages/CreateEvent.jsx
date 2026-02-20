@@ -1,69 +1,59 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
-import "../styles/dashboard.css";
+import "../styles/createEvent.css";
 
 export default function CreateEvent() {
   const navigate = useNavigate();
-  const { id } = useParams(); // detect edit mode
+  const { id } = useParams(); // event id for edit mode
 
-  const [loading, setLoading] = useState(false);
-
-  // Event state (Milestone 3 structure)
-  const [event, setEvent] = useState({
+  const [form, setForm] = useState({
     title: "",
     description: "",
-    department: "",
-    summary: "",
-    startDate: "",
-    endDate: "",
-    registrationDeadline: "",
+    date: "",
     location: "",
     category: "Tech",
     capacity: 100,
     image: "",
-    status: "Open",
+    registrationStart: "",
+    registrationEnd: "",
+    organizingDepartment: "",
+    contactInfo: "",
+    requiresApproval: false,
   });
 
-  // Load event in edit mode
+  const [loading, setLoading] = useState(false);
+
+  /* ================= LOAD EVENT FOR EDIT ================= */
   useEffect(() => {
     if (!id) return;
 
     const fetchEvent = async () => {
       try {
         setLoading(true);
-        const res = await API.get(`/events/${id}`);
-        const data = res.data;
+        const { data } = await API.get(`/events/${id}`);
 
-        setEvent({
+        setForm({
           title: data.title || "",
           description: data.description || "",
-          department: data.department || "",
-          summary: data.summary || "",
-          startDate: data.startDate
-            ? new Date(data.startDate)
-                .toISOString()
-                .slice(0, 16)
-            : "",
-          endDate: data.endDate
-            ? new Date(data.endDate)
-                .toISOString()
-                .slice(0, 16)
-            : "",
-          registrationDeadline: data.registrationDeadline
-            ? new Date(data.registrationDeadline)
-                .toISOString()
-                .slice(0, 10)
-            : "",
+          date: data.date ? data.date.slice(0, 16) : "",
           location: data.location || "",
           category: data.category || "Tech",
           capacity: data.capacity || 100,
           image: data.image || "",
-          status: data.status || "Open",
+          registrationStart: data.registrationStart
+            ? data.registrationStart.slice(0, 16)
+            : "",
+          registrationEnd: data.registrationEnd
+            ? data.registrationEnd.slice(0, 16)
+            : "",
+          organizingDepartment: data.organizingDepartment || "",
+          contactInfo: data.contactInfo || "",
+          requiresApproval: data.requiresApproval || false,
         });
       } catch (err) {
-        console.error("Failed to load event", err);
-        alert("Failed to load event data");
+        console.error("Failed to load event:", err);
+        alert("Failed to load event");
       } finally {
         setLoading(false);
       }
@@ -72,149 +62,165 @@ export default function CreateEvent() {
     fetchEvent();
   }, [id]);
 
-  // Input handler
+  /* ================= FORM HANDLING ================= */
   const handleChange = (e) => {
-    setEvent({ ...event, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  // Submit handler
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
+      setLoading(true);
+
       if (id) {
-        await API.put(`/events/${id}`, event);
-        alert("Event Updated Successfully");
+        // EDIT MODE
+        await API.put(`/events/${id}`, form);
+        alert("Event updated successfully");
       } else {
-        await API.post("/events", event);
-        alert("Event Created Successfully");
+        // CREATE MODE
+        await API.post("/events", form);
+        alert("Event created successfully");
       }
+
       navigate("/admin/manage-events");
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
+      alert(err.response?.data?.message || "Error saving event");
+    } finally {
+      setLoading(false);
     }
   };
 
+  /* ================= UI ================= */
   return (
     <div className="page-container">
-      <h1 className="page-title">
-        {id ? "Edit Event" : "Create Event"}
-      </h1>
+      <h1>{id ? "Edit Event" : "Create Event"}</h1>
 
-      {loading && <p>Loading event data...</p>}
+      <form className="event-form" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="title"
+          placeholder="Event Title"
+          value={form.title}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Title */}
-      <input
-        name="title"
-        placeholder="Event Title"
-        value={event.title}
-        onChange={handleChange}
-      />
+        <textarea
+          name="description"
+          placeholder="Event Description"
+          value={form.description}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Description */}
-      <textarea
-        name="description"
-        placeholder="Description"
-        value={event.description}
-        onChange={handleChange}
-        className="description-field"
-      />
+        <input
+          type="datetime-local"
+          name="date"
+          value={form.date}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Department */}
-      <input
-        name="department"
-        placeholder="Department"
-        value={event.department}
-        onChange={handleChange}
-      />
+        <input
+          type="text"
+          name="location"
+          placeholder="Location"
+          value={form.location}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Summary */}
-      <textarea
-        name="summary"
-        placeholder="Event Summary"
-        value={event.summary}
-        onChange={handleChange}
-        className="description-field"
-      />
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+        >
+          <option value="Tech">Tech</option>
+          <option value="Cultural">Cultural</option>
+          <option value="Sports">Sports</option>
+          <option value="Workshop">Workshop</option>
+        </select>
 
-      {/* Start date */}
-      <label>Start Date & Time</label>
-      <input
-        type="datetime-local"
-        name="startDate"
-        value={event.startDate}
-        onChange={handleChange}
-      />
+        <input
+          type="number"
+          name="capacity"
+          placeholder="Capacity"
+          value={form.capacity}
+          onChange={handleChange}
+        />
 
-      {/* End date */}
-      <label>End Date & Time</label>
-      <input
-        type="datetime-local"
-        name="endDate"
-        value={event.endDate}
-        onChange={handleChange}
-      />
+        <input
+          type="text"
+          name="image"
+          placeholder="Image URL"
+          value={form.image}
+          onChange={handleChange}
+        />
 
-      {/* Registration deadline */}
-      <label>Registration Deadline</label>
-      <input
-        type="date"
-        name="registrationDeadline"
-        value={event.registrationDeadline}
-        onChange={handleChange}
-      />
+        <label>Registration Start</label>
+        <input
+          type="datetime-local"
+          name="registrationStart"
+          value={form.registrationStart}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Location */}
-      <input
-        name="location"
-        placeholder="Location"
-        value={event.location}
-        onChange={handleChange}
-      />
+        <label>Registration End</label>
+        <input
+          type="datetime-local"
+          name="registrationEnd"
+          value={form.registrationEnd}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Category */}
-      <select
-        name="category"
-        value={event.category}
-        onChange={handleChange}
-      >
-        <option value="Tech">Tech</option>
-        <option value="Cultural">Cultural</option>
-        <option value="Sports">Sports</option>
-        <option value="Workshop">Workshop</option>
-        <option value="Seminar">Seminar</option>
-      </select>
+        <input
+          type="text"
+          name="organizingDepartment"
+          placeholder="Organizing Department"
+          value={form.organizingDepartment}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Capacity */}
-      <input
-        type="number"
-        name="capacity"
-        placeholder="Capacity"
-        value={event.capacity}
-        onChange={handleChange}
-      />
+        <input
+          type="text"
+          name="contactInfo"
+          placeholder="Admin Contact"
+          value={form.contactInfo}
+          onChange={handleChange}
+          required
+        />
 
-      {/* Image */}
-      <input
-        name="image"
-        placeholder="Image URL"
-        value={event.image}
-        onChange={handleChange}
-      />
+        <label className="checkbox">
+          <input
+            type="checkbox"
+            name="requiresApproval"
+            checked={form.requiresApproval}
+            onChange={handleChange}
+          />
+          Requires Admin Approval
+        </label>
 
-      {/* Draft option */}
-      <select
-        name="status"
-        value={event.status}
-        onChange={handleChange}
-      >
-        <option value="Open">Open</option>
-        <option value="Draft">Draft</option>
-      </select>
-
-      {/* Submit */}
-      <button className="primary-btn" onClick={handleSubmit}>
-        {id ? "Update Event" : "Create Event"}
-      </button>
+        <button
+          type="submit"
+          className="primary-btn"
+          disabled={loading}
+        >
+          {loading
+            ? "Saving..."
+            : id
+            ? "Update Event"
+            : "Create Event"}
+        </button>
+      </form>
     </div>
   );
 }

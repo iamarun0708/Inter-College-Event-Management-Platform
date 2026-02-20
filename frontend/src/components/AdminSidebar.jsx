@@ -33,6 +33,16 @@ export default function AdminSidebar() {
         >
           Manage Events
         </NavLink>
+
+        {/* NEW: Feedback Analysis */}
+        <NavLink
+          to="/admin/feedback"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
+          Feedback Analysis
+        </NavLink>
       </nav>
     </aside>
   );

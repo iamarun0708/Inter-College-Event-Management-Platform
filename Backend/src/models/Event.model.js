@@ -1,102 +1,102 @@
-<<<<<<< HEAD
-const mongoose = require('mongoose');
-
-const eventSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    hostingCollege: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    category: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    location: {
-        type: String,
-        required: true
-    },
-    startDate: {
-        type: Date,
-        required: true
-    },
-    endDate: {
-        type: Date,
-        required: true
-    },
-    organizer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    }
-}, {
-    timestamps: true
-});
-
-module.exports = mongoose.model('Event', eventSchema);
-=======
 const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    description: String,
+    // Core Event Details
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-    // Department conducting event
-    department: String,
+    description: {
+      type: String,
+      required: true,
+    },
 
-    // Short summary / eligibility
-    summary: String,
+    collegeName: {
+      type: String,
+      required: true,
+    },
 
-    category: String,
-    location: String,
+    location: {
+      type: String,
+      required: true,
+    },
 
-    // Event timing
-    startDate: { type: Date, required: true },
-    endDate: Date,
+    date: {
+      type: Date,
+      required: true,
+    },
 
-    // Registration deadline
-    registrationDeadline: Date,
+    // Category
+    category: {
+      type: String,
+      required: true,
+      enum: ["Workshop", "Seminar", "Cultural", "Sports", "Tech", "Other"],
+    },
 
-    // Slot capacity
+    // Media
+    image: {
+      type: String,
+      default: "https://via.placeholder.com/150",
+    },
+
+    // Capacity & Registration
     capacity: {
       type: Number,
       default: 100,
     },
 
-    // Track filled slots (important for milestone 3)
-    registeredCount: {
-      type: Number,
-      default: 0,
+    requiresApproval: {
+      type: Boolean,
+      default: false, // false = auto approve
     },
 
-    image: String,
+    // NEW: Registration window
+    registrationStart: {
+      type: Date,
+      required: true,
+    },
 
+    registrationEnd: {
+      type: Date,
+      required: true,
+    },
+
+    // NEW: Organizer details
+    organizingDepartment: {
+      type: String,
+    },
+
+    contactInfo: {
+      type: String,
+    },
+
+    // Visibility Control
+    visibility: {
+      type: String,
+      enum: ["Public", "College-Only"],
+      default: "Public",
+    },
+
+    // Event Status
     status: {
       type: String,
-      enum: ["Open", "Closed", "Draft"],
+      enum: ["Open", "Closed", "Cancelled"],
       default: "Open",
     },
 
-    organizer: {
+    // Admin who created event
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
-
-    // Contact email of admin (for student view)
-    contactEmail: String,
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 module.exports = mongoose.model("Event", eventSchema);
->>>>>>> origin/dev-varshini

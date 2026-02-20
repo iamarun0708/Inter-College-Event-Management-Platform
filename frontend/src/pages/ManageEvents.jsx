@@ -5,21 +5,15 @@ import "../styles/manageEvents.css";
 
 export default function ManageEvents() {
   const navigate = useNavigate();
-
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
-
-  // Fetch events
+  // Fetch all events on load
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const res = await API.get("/events");
         setEvents(res.data);
-        setFilteredEvents(res.data);
       } catch (err) {
         console.error("Failed to fetch events", err);
       } finally {
@@ -30,37 +24,17 @@ export default function ManageEvents() {
     fetchEvents();
   }, []);
 
-  // Apply search + filter
-  useEffect(() => {
-    let temp = [...events];
-
-    if (search) {
-      temp = temp.filter((e) =>
-        e.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    if (category !== "All") {
-      temp = temp.filter((e) => e.category === category);
-    }
-
-    setFilteredEvents(temp);
-  }, [search, category, events]);
-
   // Delete event
   const deleteEvent = async (id) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to cancel this event?"
+      "Are you sure you want to delete this event?"
     );
     if (!confirmDelete) return;
 
     try {
       await API.delete(`/events/${id}`);
-
-      // Remove from UI
       setEvents((prev) => prev.filter((e) => e._id !== id));
-
-      alert("Event cancelled successfully");
+      alert("Event deleted successfully");
     } catch (err) {
       console.error("Delete failed", err);
       alert("Failed to delete event");
@@ -79,36 +53,14 @@ export default function ManageEvents() {
   return (
     <div className="page-container">
       <h1 className="page-title">Manage Events</h1>
-      <p className="page-subtitle">View, edit or delete events</p>
+      <p className="page-subtitle">View, edit or manage participants</p>
 
-      {/* SEARCH + FILTER */}
-      <div className="manage-controls">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="All">All Categories</option>
-          <option value="Tech">Tech</option>
-          <option value="Cultural">Cultural</option>
-          <option value="Sports">Sports</option>
-          <option value="Workshop">Workshop</option>
-          <option value="Seminar">Seminar</option>
-        </select>
-      </div>
-
-      {/* EMPTY STATE */}
-      {filteredEvents.length === 0 ? (
+      {/* Empty state */}
+      {events.length === 0 ? (
         <p style={{ marginTop: "20px" }}>No events found.</p>
       ) : (
         <div className="manage-grid">
-          {filteredEvents.map((event) => (
+          {events.map((event) => (
             <div key={event._id} className="manage-card">
               {/* Header */}
               <div className="manage-header">
@@ -127,21 +79,17 @@ export default function ManageEvents() {
                 👥 Capacity: {event.capacity}
               </p>
 
-              {event.department && (
-                <p className="manage-meta">
-                  🏫 Dept: {event.department}
-                </p>
-              )}
-
-              {/* Description preview */}
-              {event.summary && (
-                <div className="description-box">
-                  {event.summary}
-                </div>
-              )}
-
               {/* Actions */}
               <div className="manage-actions">
+                <button
+                  className="participants-btn"
+                  onClick={() =>
+                    navigate(`/admin/participants/${event._id}`)
+                  }
+                >
+                  Participants
+                </button>
+
                 <button
                   className="edit-btn"
                   onClick={() =>

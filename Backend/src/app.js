@@ -3,7 +3,18 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
-const { notFound, errorHandler } = require("./middlewares/error.middleware");
+// Error middleware
+const {
+  notFound,
+  errorHandler,
+} = require("./middlewares/error.middleware");
+
+// Routes
+const authRoutes = require("./routes/auth.routes");
+const eventRoutes = require("./routes/event.routes");
+const registrationRoutes = require("./routes/registration.routes");
+const feedbackRoutes = require("./routes/feedback.routes");
+const notificationRoutes = require("./routes/notification.routes");
 
 const app = express();
 
@@ -14,57 +25,28 @@ app.use(helmet());
 app.use(cors());
 
 /* =========================================================
-   RATE LIMITER
+   RATE LIMITING
 ========================================================= */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max requests per IP
+  max: 100, // limit each IP to 100 requests
 });
 app.use(limiter);
 
 /* =========================================================
-   BODY PARSER
+   BODY PARSING
 ========================================================= */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* =========================================================
-   ROUTES (SAFE LOADING)
+   API ROUTES
 ========================================================= */
-try {
-  const authRoutes = require("./routes/auth.routes");
-  app.use("/api/auth", authRoutes);
-} catch (e) {
-  console.log("Auth routes not loaded:", e.message);
-}
-
-try {
-  const eventRoutes = require("./routes/event.routes");
-  app.use("/api/events", eventRoutes);
-} catch (e) {
-  console.log("Event routes not loaded:", e.message);
-}
-
-try {
-  const registrationRoutes = require("./routes/registration.routes");
-  app.use("/api/registrations", registrationRoutes);
-} catch (e) {
-  console.log("Registration routes not loaded:", e.message);
-}
-
-try {
-  const feedbackRoutes = require("./routes/feedback.routes");
-  app.use("/api/feedback", feedbackRoutes);
-} catch (e) {
-  console.log("Feedback routes not loaded:", e.message);
-}
-
-try {
-  const notificationRoutes = require("./routes/notification.routes");
-  app.use("/api/notifications", notificationRoutes);
-} catch (e) {
-  console.log("Notification routes not loaded:", e.message);
-}
+app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/registrations", registrationRoutes);
+app.use("/api/feedback", feedbackRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 /* =========================================================
    ROOT ROUTE

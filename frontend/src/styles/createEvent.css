@@ -1,0 +1,48 @@
+.event-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.event-form input,
+.event-form textarea,
+.event-form select {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #7b4cff, #a56eff);
+  color: white;
+}
+
+.event-form input::placeholder,
+.event-form textarea::placeholder {
+  color: #eee;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333;
+}
+
+/* ================= FEEDBACK SELECT FIX ================= */
+
+/* ================= FEEDBACK SELECT STYLE ================= */
+
+.event-form select {
+  background: linear-gradient(90deg, #6d28d9, #8b5cf6);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* Dropdown option text (inside the opened list) */
+.event-form select option {
+  background: #ffffff;
+  color: #000000;
+}

@@ -34,6 +34,16 @@ export default function StudentSidebar() {
           My Registrations
         </NavLink>
 
+        {/* NEW: Feedback menu */}
+        <NavLink
+          to="/student/feedback"
+          className={({ isActive }) =>
+            isActive ? "nav-item active" : "nav-item"
+          }
+        >
+          Feedback
+        </NavLink>
+
         <NavLink
           to="/certificates"
           className={({ isActive }) =>

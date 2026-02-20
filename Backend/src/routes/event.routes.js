@@ -1,23 +1,3 @@
-const express = require('express');
-const router = express.Router();
-const {
-    createEvent,
-    getEvents,
-    getEventById,
-    updateEvent,
-    deleteEvent
-} = require('../controllers/event.controller');
-const { protect } = require('../middlewares/auth.middleware');
-const { authorize } = require('../middlewares/role.middleware');
-
-router.route('/')
-    .get(getEvents)
-    .post(protect, authorize('college_admin', 'super_admin'), createEvent);
-
-router.route('/:id')
-    .get(getEventById)
-    .put(protect, authorize('college_admin', 'super_admin'), updateEvent)
-    .delete(protect, authorize('college_admin', 'super_admin'), deleteEvent);
 const express = require("express");
 const router = express.Router();
 
@@ -29,28 +9,33 @@ const {
   deleteEvent,
 } = require("../controllers/event.controller");
 
-const { protect, isAdmin } = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 
-// Get all events
+/*
+|--------------------------------------------------------------------------
+| Event Routes
+|--------------------------------------------------------------------------
+| GET    /api/events         → Public (Students & Admin)
+| GET    /api/events/:id     → Public (View / Edit Prefill)
+| POST   /api/events         → Private (Admin only)
+| PUT    /api/events/:id     → Private (Admin only)
+| DELETE /api/events/:id     → Private (Admin only – Soft delete)
+|--------------------------------------------------------------------------
+*/
+
+// 🔹 Get all events (Student + Admin)
 router.get("/", getEvents);
 
-// Get single event by ID
+// 🔹 Get single event by ID (For Edit Prefill & Event Details)
 router.get("/:id", getEventById);
 
+// 🔹 Create new event (Admin only)
+router.post("/", protect, createEvent);
 
-
-
-// Create event
-router.post("/", protect, isAdmin, createEvent);
-
-// Update event
-router.put("/:id", protect, isAdmin, updateEvent);
-
-// Delete event
-router.delete("/:id", protect, isAdmin, deleteEvent);
+// 🔹 Update event (Admin only)
+router.put("/:id", protect, updateEvent);
 
 // 🔹 Delete / Cancel event (Admin only)
 router.delete("/:id", protect, deleteEvent);
-
 
 module.exports = router;

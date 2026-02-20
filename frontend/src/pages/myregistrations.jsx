@@ -3,49 +3,61 @@ import API from "../services/api";
 import "../styles/myregistrations.css";
 
 export default function MyRegistrations() {
-  const [registrations, setRegistrations] = useState([]);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [regs, setRegs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Fetch student registrations
+  // Fetch registrations
+  const fetchRegistrations = async () => {
+    try {
+      const res = await API.get("/registrations/my");
+      setRegs(res.data);
+    } catch (err) {
+      console.error("Failed to load registrations", err);
+      setError("Failed to load registrations");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRegistrations = async () => {
-      try {
-        const { data } = await API.get("/registrations/my");
-        setRegistrations(data);
-      } catch (err) {
-        console.error("Failed to fetch registrations:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRegistrations();
   }, []);
 
-  // Filter logic
-  const filtered = registrations.filter((reg) => {
-    const matchesSearch =
-      reg.event?.title
-        ?.toLowerCase()
-        .includes(search.toLowerCase());
+  // Cancel registration
+  const cancel = async (id) => {
+    const confirmCancel = window.confirm(
+      "Are you sure you want to cancel this registration?"
+    );
 
-    const matchesStatus =
-      statusFilter === "All" ||
-      reg.status === statusFilter;
+    if (!confirmCancel) return;
 
-    return matchesSearch && matchesStatus;
-  });
+    try {
+      const res = await API.delete(`/registrations/${id}`);
+      alert(res.data.message);
 
-  // Status message
-  const getStatusMessage = (reg) => {
-    if (reg.status === "Approved")
-      return "Registration confirmed";
-    if (reg.status === "Rejected")
-      return "Registration rejected";
-    return "Waiting for approval";
+      // Remove from UI
+      setRegs((prev) => prev.filter((r) => r._id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || "Cancellation failed");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="page-container">
+        <h2>Loading registrations...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="page-container">
+        <h2>{error}</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="page-container">
@@ -54,70 +66,34 @@ export default function MyRegistrations() {
         Track all events you’ve registered for
       </p>
 
-      {/* SEARCH + FILTER */}
-      <div className="filters">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="All">All Status</option>
-          <option value="Approved">Approved</option>
-          <option value="Pending">Pending</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Waitlisted">Waitlisted</option>
-        </select>
-      </div>
-
-      {/* CONTENT */}
-      {loading ? (
-        <p style={{ textAlign: "center" }}>
-          Loading registrations...
-        </p>
+      {regs.length === 0 ? (
+        <p>No registrations found.</p>
       ) : (
         <div className="card-grid">
-          {filtered.length === 0 ? (
-            <p>No registrations found.</p>
-          ) : (
-            filtered.map((reg) => (
-              <div
-                key={reg._id}
-                className="event-card"
-              >
-                <div>
-                  <h3>{reg.event?.title}</h3>
-                  <p className="muted">
-                    📅{" "}
-                    {new Date(
-                      reg.event?.startDate
-                    ).toLocaleDateString()}
-                  </p>
-                  <p className="muted">
-                    📍 {reg.event?.location}
-                  </p>
-
-                  {/* Status message */}
-                  <p className="status-message">
-                    {getStatusMessage(reg)}
-                  </p>
-                </div>
-
-                <span
-                  className={`status-pill ${
-                    reg.status.toLowerCase()
-                  }`}
-                >
-                  {reg.status}
-                </span>
+          {regs.map((r) => (
+            <div key={r._id} className="event-card">
+              <div>
+                <h3>{r.event?.title}</h3>
+                <p className="muted">
+                  {new Date(r.event?.date).toLocaleDateString()}
+                </p>
+                <p className="muted">{r.event?.location}</p>
               </div>
-            ))
-          )}
+
+              <span
+                className={`status-pill ${r.status.toLowerCase()}`}
+              >
+                {r.status}
+              </span>
+
+              <button
+                className="primary-btn"
+                onClick={() => cancel(r._id)}
+              >
+                Cancel
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

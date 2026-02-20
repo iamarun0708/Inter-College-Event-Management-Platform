@@ -383,3 +383,71 @@
   background: rgba(255, 255, 255, 0.32);
   transform: scale(1.08);
 }
+
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.participants-table th,
+.participants-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.participants-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+}
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.approve-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reject-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.waitlist-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ================= FEEDBACK FORM FIX ================= */
+
+.feedback-form select {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Dropdown option text */
+.feedback-form option {
+  color: #000 !important;
+  background: #fff !important;
+}

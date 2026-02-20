@@ -14,20 +14,12 @@ export default function EventDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // registration states
-  const [manual, setManual] = useState(false);
+  const [showManual, setShowManual] = useState(false);
   const [form, setForm] = useState({
-    name: "",
-    email: "",
+    department: "",
     university: "",
-    phone: "",
     reason: "",
-    communicationMode: "email",
   });
-
-  const [timer, setTimer] = useState("");
-
-  /* ================= FETCH EVENT ================= */
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -45,38 +37,24 @@ export default function EventDetails() {
     if (id) fetchEventDetails();
   }, [id]);
 
-  /* ================= TIMER ================= */
+  /* ================= REGISTRATION FUNCTIONS ================= */
 
-  useEffect(() => {
-    if (!event?.date) return;
-
-    const interval = setInterval(() => {
-      const diff = new Date(event.date) - new Date();
-
-      if (diff <= 0) {
-        setTimer("Event started");
-        return;
-      }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const mins = Math.floor((diff / (1000 * 60)) % 60);
-
-      setTimer(`${hours}h ${mins}m remaining`);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [event]);
-
-  /* ================= REGISTER ================= */
-
-  const handleRegister = async () => {
+  const autoRegister = async () => {
     try {
-      await API.post(`/registrations/${id}`, form);
-      alert("Registration submitted!");
-      navigate("/registrations");
+      const res = await API.post(`/registrations/auto/${id}`);
+      alert(res.data.message);
     } catch (err) {
-      console.error(err);
-      alert("Registration failed");
+      alert(err.response?.data?.message || "Error");
+    }
+  };
+
+  const manualRegister = async () => {
+    try {
+      const res = await API.post(`/registrations/manual/${id}`, form);
+      alert(res.data.message);
+      setShowManual(false);
+    } catch (err) {
+      alert(err.response?.data?.message || "Error");
     }
   };
 
@@ -99,11 +77,6 @@ export default function EventDetails() {
     );
   }
 
-  const slotsLeft =
-    event.capacity && event.registeredCount
-      ? event.capacity - event.registeredCount
-      : event.capacity || "N/A";
-
   /* ================= UI ================= */
 
   return (
@@ -117,16 +90,18 @@ export default function EventDetails() {
         {/* EVENT IMAGE */}
         <img
           src={event.image || defaultImg}
-          alt={event.name}
+          alt={event.title}
           onError={(e) => (e.target.src = defaultImg)}
         />
 
         {/* EVENT INFO */}
         <div className="event-info">
-          <h1>{event.name}</h1>
+          <h1>{event.title}</h1>
 
           <span
-            className={`status-badge ${(event.status || "open").toLowerCase()}`}
+            className={`status-badge ${
+              (event.status || "open").toLowerCase()
+            }`}
           >
             {event.status || "Open"}
           </span>
@@ -139,53 +114,44 @@ export default function EventDetails() {
               {new Date(event.date).toLocaleDateString()}
             </p>
             <p>
-              <strong>⏱ Starts in:</strong> {timer || "Calculating..."}
-            </p>
-            <p>
               <strong>📍 Location:</strong> {event.location}
             </p>
             <p>
-              <strong>🏷 Category:</strong>{" "}
-              {event.category || "General"}
+              <strong>🏷 Category:</strong> {event.category || "General"}
             </p>
             <p>
-              <strong>🎟 Slots left:</strong> {slotsLeft}
+              <strong>👥 Capacity:</strong> {event.capacity}
             </p>
             <p>
               <strong>🏫 Organized By:</strong>{" "}
               {event.collegeName || "Campus Admin"}
             </p>
-            <p>
-              <strong>📧 Contact:</strong>{" "}
-              {event.organizerEmail || "admin@campus.com"}
-            </p>
           </div>
 
-          <hr style={{ margin: "20px 0" }} />
+          {/* REGISTRATION BUTTONS */}
+          <div style={{ marginTop: 20 }}>
+            <button className="register-btn" onClick={autoRegister}>
+              Auto Register
+            </button>
 
-          {/* REGISTRATION TYPE */}
-          <label>
-            <input
-              type="checkbox"
-              checked={manual}
-              onChange={() => setManual(!manual)}
-            />{" "}
-            Manual Registration
-          </label>
+            <button
+              className="register-btn"
+              style={{ marginLeft: 10 }}
+              onClick={() => setShowManual(true)}
+            >
+              Manual Register
+            </button>
+          </div>
 
           {/* MANUAL FORM */}
-          {manual && (
-            <div className="registration-form">
+          {showManual && (
+            <div className="manual-form" style={{ marginTop: 20 }}>
+              <h3>Manual Registration</h3>
+
               <input
-                placeholder="Name"
+                placeholder="Department"
                 onChange={(e) =>
-                  setForm({ ...form, name: e.target.value })
-                }
-              />
-              <input
-                placeholder="Email"
-                onChange={(e) =>
-                  setForm({ ...form, email: e.target.value })
+                  setForm({ ...form, department: e.target.value })
                 }
               />
               <input
@@ -194,37 +160,22 @@ export default function EventDetails() {
                   setForm({ ...form, university: e.target.value })
                 }
               />
-              <input
-                placeholder="Phone"
-                onChange={(e) =>
-                  setForm({ ...form, phone: e.target.value })
-                }
-              />
               <textarea
-                placeholder="Why do you want to join this event?"
+                placeholder="Why do you want to join?"
                 onChange={(e) =>
                   setForm({ ...form, reason: e.target.value })
                 }
               />
 
-              <select
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    communicationMode: e.target.value,
-                  })
-                }
+              <button
+                className="register-btn"
+                onClick={manualRegister}
+                style={{ marginTop: 10 }}
               >
-                <option value="email">Email</option>
-                <option value="whatsapp">WhatsApp</option>
-              </select>
+                Submit
+              </button>
             </div>
           )}
-
-          {/* REGISTER BUTTON */}
-          <button className="register-btn" onClick={handleRegister}>
-            Register Now
-          </button>
         </div>
       </div>
     </div>

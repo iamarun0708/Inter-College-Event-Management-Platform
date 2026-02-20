@@ -1,16 +1,30 @@
-<<<<<<< HEAD
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { addFeedback, getEventFeedback } = require('../controllers/feedback.controller');
-const { protect } = require('../middlewares/auth.middleware');
-const { authorize } = require('../middlewares/role.middleware');
 
-router.post('/', protect, authorize('student'), addFeedback);
-router.get('/:eventId', getEventFeedback);
+const feedbackController = require("../controllers/feedback.controller");
+const { protect } = require("../middlewares/auth.middleware");
+
+/* =========================================================
+   STUDENT ROUTES
+========================================================= */
+
+// Submit feedback (only eligible students)
+router.post(
+  "/submit",
+  protect,
+  feedbackController.submitFeedback
+);
+
+
+/* =========================================================
+   ADMIN ROUTES
+========================================================= */
+
+// Get feedback summary for an event
+router.get(
+  "/summary/:eventId",
+  protect,
+  feedbackController.getFeedbackSummary
+);
 
 module.exports = router;
-=======
-//dummy files just to prevent server crashing
-const router = require('express').Router();
-module.exports = router;
->>>>>>> origin/dev-varshini

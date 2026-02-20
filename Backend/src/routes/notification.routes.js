@@ -1,11 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
+const { getMyNotifications, markAsRead } = require('../controllers/notification.controller');
+const { protect } = require('../middlewares/auth.middleware');
 
-const authMiddleware = require("../middlewares/auth.middleware");
-const notificationController = require("../controllers/notification.controller");
-
-// Routes
-router.get("/", authMiddleware.protect, notificationController.getMyNotifications);
-router.put("/:id", authMiddleware.protect, notificationController.markAsRead);
+router.get('/', protect, getMyNotifications);
+router.put('/:id', protect, markAsRead);
 
 module.exports = router;
