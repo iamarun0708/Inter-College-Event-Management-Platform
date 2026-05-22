@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   collegeName: { type: String, required: true },
   role: { type: String, enum: ['student', 'college_admin'], default: 'student' },
+  resetPasswordToken: { type: String },
+  resetPasswordExpire: { type: Date },
 }, { timestamps: true });
 
 // Encrypt password before saving

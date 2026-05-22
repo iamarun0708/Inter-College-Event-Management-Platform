@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 import "../styles/auth.css";
@@ -9,7 +9,16 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -34,15 +43,21 @@ export default function Login() {
       const { token, role, _id } = res.data;
 
       // Save correctly to Local Storage
-      localStorage.setItem("user", JSON.stringify({ 
-          token, 
-          role, 
-          name: userName, // <--- This ensures the name is saved
-          _id, 
-          email 
+      localStorage.setItem("user", JSON.stringify({
+        token,
+        role,
+        name: userName, // <--- This ensures the name is saved
+        _id,
+        email
       }));
 
-      
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
+
 
       // 4. Redirect based on Role
       if (role === "college_admin") {
@@ -67,7 +82,7 @@ export default function Login() {
         <div className="subtitle">Hi, Welcome back 👋</div>
 
         {/* Removed Google Btn for now as backend doesn't support it yet */}
-        
+
         <label>Email</label>
         <div className="field-group">
           <input
@@ -89,10 +104,20 @@ export default function Login() {
 
           <div className="password-row">
             <label className="remember-me">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
               Remember Me
             </label>
-            <span className="auth-link-p">Forgot Password?</span>
+            <span
+              className="auth-link-p"
+              onClick={() => navigate("/forgot-password")}
+              style={{ cursor: 'pointer' }}
+            >
+              Forgot Password?
+            </span>
           </div>
         </div>
 
@@ -111,7 +136,7 @@ export default function Login() {
       </div>
 
       <div className="auth-illustration">
-         {/* Make sure this image path exists in your new folder structure! */}
+        {/* Make sure this image path exists in your new folder structure! */}
         <img src="/src/assets/login.svg" alt="illustration" />
       </div>
     </div>
